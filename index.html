@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TierForge</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ── */
+:root {
+  --bg:      #0e0e10;
+  --bg2:     #18181b;
+  --bg3:     #222226;
+  --border:  #2e2e35;
+  --text:    #e8e8f0;
+  --text2:   #9090a0;
+  --accent:  #6c63ff;
+  --danger:  #e05252;
+  --green:   #4caf50;
+  --radius:  6px;
+  --label-w: 110px;
+  --img-h:   72px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Be Vietnam Pro', sans-serif;
+  min-height: 100vh;
+}
+
+/* ── PASSWORD GATE ── */
+#gate {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+}
+.gate-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 52px 44px;
+  width: 340px;
+  text-align: center;
+}
+.gate-box h1 {
+  font-family: 'Be Vietnam Pro', sans-serif; font-weight: 800;
+  font-size: 3rem; letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.gate-box p { color: var(--text2); font-size: 0.85rem; margin-bottom: 28px; }
+.gate-box input {
+  width: 100%; padding: 12px 16px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius); color: var(--text);
+  font-size: 1rem; font-family: inherit;
+  outline: none; text-align: center; letter-spacing: 6px; margin-bottom: 12px;
+  transition: border-color .2s;
+}
+.gate-box input:focus { border-color: var(--accent); }
+.gate-box .gate-btn {
+  width: 100%; padding: 12px;
+  background: var(--accent); border: none; border-radius: var(--radius);
+  color: #fff; font-family: inherit; font-size: 0.95rem; font-weight: 600;
+  cursor: pointer; transition: opacity .2s;
+}
+.gate-box .gate-btn:hover { opacity: .85; }
+#gate-error { color: var(--danger); font-size: 0.82rem; margin-top: 10px; min-height: 18px; }
+
+/* ── APP SHELL ── */
+#app { display: none; flex-direction: column; min-height: 100vh; }
+
+/* ── HEADER ── */
+header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 24px;
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+}
+header h1 {
+  font-family: 'Be Vietnam Pro', sans-serif; font-weight: 800;
+  font-size: 1.8rem; letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+.header-sep { flex: 1; }
+.tl-selector { display: flex; align-items: center; gap: 8px; }
+.tl-selector select {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); padding: 7px 12px;
+  border-radius: var(--radius); font-family: inherit; font-size: 0.88rem;
+  outline: none; min-width: 160px; cursor: pointer;
+}
+
+/* ── BUTTONS ── */
+.btn {
+  padding: 8px 18px; border-radius: var(--radius);
+  border: 1px solid transparent; font-family: inherit;
+  font-size: 0.85rem; font-weight: 600; cursor: pointer;
+  transition: opacity .15s, border-color .15s;
+  white-space: nowrap;
+}
+.btn:hover { opacity: .82; }
+.btn-primary  { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-secondary { background: var(--bg3); color: var(--text2); border-color: var(--border); }
+.btn-danger   { background: var(--danger); color: #fff; border-color: var(--danger); }
+.btn-sm { padding: 6px 13px; font-size: 0.8rem; }
+
+/* ── MAIN ── */
+main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px; }
+
+/* ── TIERLIST ── */
+.tierlist-wrap {
+  border: 1px solid var(--border);
+  border-radius: 8px; overflow: hidden;
+}
+
+/* ── TIER ROW ── */
+.tier-row {
+  display: flex; align-items: stretch;
+  border-bottom: 1px solid var(--border);
+  min-height: calc(var(--img-h) + 16px);
+}
+.tier-row:last-child { border-bottom: none; }
+
+.tier-label {
+  width: var(--label-w); min-width: var(--label-w);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Be Vietnam Pro', sans-serif; font-weight: 800;
+  font-size: 1.6rem; letter-spacing: 0.5px;
+  user-select: none; flex-shrink: 0;
+}
+
+.tier-items {
+  flex: 1;
+  display: flex; flex-wrap: wrap; align-content: flex-start;
+  gap: 4px; padding: 6px;
+  background: var(--bg2);
+  transition: background .15s;
+}
+.tier-items.drag-over {
+  background: rgba(108,99,255,.1);
+  outline: 2px dashed var(--accent);
+  outline-offset: -3px;
+}
+
+.tier-controls {
+  display: flex; flex-direction: column;
+  justify-content: center; gap: 4px;
+  padding: 6px 8px;
+  background: var(--bg); border-left: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.ctrl-btn {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text2); width: 30px; height: 28px;
+  border-radius: 4px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; transition: border-color .15s, color .15s;
+}
+.ctrl-btn:hover { border-color: var(--accent); color: var(--text); }
+
+/* ── ITEM CARD ── */
+.item-card {
+  position: relative; cursor: grab;
+  border-radius: 4px; overflow: hidden;
+  border: 2px solid transparent;
+  transition: border-color .15s, transform .15s;
+  flex-shrink: 0; user-select: none;
+}
+.item-card:hover  { border-color: var(--accent); transform: scale(1.05); z-index: 2; }
+.item-card.dragging { opacity: .35; cursor: grabbing; }
+
+.item-card img { display: block; object-fit: cover; }
+
+.item-remove {
+  position: absolute; top: 2px; right: 2px;
+  background: rgba(0,0,0,.75); border: none; color: #fff;
+  border-radius: 50%; width: 18px; height: 18px;
+  font-size: 9px; cursor: pointer;
+  display: none; align-items: center; justify-content: center;
+  line-height: 1;
+}
+.item-card:hover .item-remove { display: flex; }
+
+/* ── IMAGE DISPLAY MODES ── */
+.mode-square    .item-card img { width: var(--img-h); height: var(--img-h); }
+.mode-landscape .item-card img { width: calc(var(--img-h) * 1.5); height: var(--img-h); }
+.mode-portrait  .item-card img { width: calc(var(--img-h) * 0.75); height: var(--img-h); }
+.mode-round     .item-card, .mode-round .item-card img { border-radius: 50%; }
+.mode-round     .item-card img { width: var(--img-h); height: var(--img-h); }
+.mode-nocrop    .item-card img { width: auto; height: var(--img-h); object-fit: contain; background: var(--bg3); }
+
+/* ── POOL ── */
+.pool-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.pool-header h3 {
+  font-family: 'Be Vietnam Pro', sans-serif; font-weight: 800;
+  font-size: 1.1rem; letter-spacing: 0.5px; color: var(--text2);
+}
+.pool-items {
+  min-height: 90px;
+  display: flex; flex-wrap: wrap; gap: 6px; padding: 10px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 8px; transition: background .15s;
+}
+.pool-items.drag-over {
+  background: rgba(108,99,255,.1);
+  outline: 2px dashed var(--accent);
+  outline-offset: -3px;
+}
+.pool-empty {
+  color: var(--text2); font-size: 0.82rem;
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; pointer-events: none;
+}
+
+/* ── TOOLBAR ── */
+.toolbar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 12px 24px;
+  background: var(--bg2); border-top: 1px solid var(--border);
+  position: sticky; bottom: 0; z-index: 50;
+}
+.toolbar select {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); padding: 7px 12px;
+  border-radius: var(--radius); font-family: inherit; font-size: 0.85rem;
+  outline: none; cursor: pointer;
+}
+.upload-label {
+  padding: 7px 16px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius); color: var(--text);
+  font-size: 0.85rem; font-weight: 500; cursor: pointer;
+  transition: border-color .15s, color .15s; white-space: nowrap;
+}
+.upload-label:hover { border-color: var(--accent); color: var(--accent); }
+#fileInput { display: none; }
+.toolbar-sep { flex: 1; }
+
+/* ── STATUS ── */
+#saveStatus {
+  font-size: 0.78rem; color: var(--text2);
+  display: flex; align-items: center; gap: 5px;
+}
+#saveStatus.saving { color: var(--accent); }
+#saveStatus.saved  { color: var(--green); }
+#saveStatus.error  { color: var(--danger); }
+
+/* ── MODALS ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.72);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.modal-overlay.hidden { display: none; }
+.modal {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 32px; width: 460px;
+  max-width: 95vw; position: relative;
+  max-height: 90vh; overflow-y: auto;
+}
+.modal h2 {
+  font-family: 'Be Vietnam Pro', sans-serif; font-weight: 800;
+  font-size: 1.6rem; letter-spacing: 0.5px; margin-bottom: 4px;
+}
+.modal .sub { color: var(--text2); font-size: 0.82rem; margin-bottom: 22px; }
+.modal label {
+  display: block; font-size: 0.78rem; font-weight: 600;
+  color: var(--text2); text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+.modal input[type=text],
+.modal input[type=password] {
+  width: 100%; padding: 10px 13px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius); color: var(--text);
+  font-family: inherit; font-size: 0.9rem; outline: none;
+  margin-bottom: 16px; transition: border-color .2s;
+}
+.modal input:focus { border-color: var(--accent); }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+.close-btn {
+  position: absolute; top: 14px; right: 16px;
+  background: none; border: none; color: var(--text2);
+  font-size: 1.3rem; cursor: pointer; line-height: 1;
+  transition: color .15s;
+}
+.close-btn:hover { color: var(--text); }
+
+/* ── ROW EDITOR ── */
+.color-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.color-swatch {
+  width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+  border: 3px solid transparent; transition: border-color .15s, transform .15s;
+  flex-shrink: 0;
+}
+.color-swatch:hover  { transform: scale(1.12); }
+.color-swatch.active { border-color: #fff !important; transform: scale(1.15); }
+.row-actions {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px;
+}
+
+/* ── TL MANAGER ── */
+.tl-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius); margin-bottom: 8px;
+}
+.tl-item-name { flex: 1; font-size: 0.9rem; }
+.tl-item-date { color: var(--text2); font-size: 0.75rem; white-space: nowrap; }
+
+/* ── MISC ── */
+.tag {
+  display: inline-block; padding: 2px 9px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 20px; font-size: 0.72rem; color: var(--text2);
+}
+.spinner {
+  display: inline-block; width: 13px; height: 13px;
+  border: 2px solid var(--border); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin .55s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── UPLOAD PROGRESS ── */
+.upload-progress {
+  position: fixed; bottom: 70px; right: 24px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 18px; min-width: 220px;
+  z-index: 200; display: none;
+}
+.upload-progress.visible { display: block; }
+.up-title { font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; }
+.up-bar-wrap { background: var(--bg3); border-radius: 4px; height: 6px; overflow: hidden; }
+.up-bar { background: var(--accent); height: 100%; transition: width .3s; width: 0%; }
+.up-label { font-size: 0.75rem; color: var(--text2); margin-top: 5px; }
+</style>
+</head>
+<body>
+
+<!-- ══ PASSWORD GATE ══ -->
+<div id="gate">
+  <div class="gate-box">
+    <h1>TierForge</h1>
+    <p>Nhập mật khẩu để tiếp tục</p>
+    <input type="password" id="gateInput" placeholder="••••••••" autocomplete="current-password">
+    <button class="gate-btn" id="gateBtn">Vào →</button>
+    <div id="gate-error"></div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+  <header>
+    <h1>TierForge</h1>
+    <div class="tl-selector">
+      <select id="tlSelect"></select>
+      <button class="btn btn-secondary btn-sm" id="btnTlManager">Quản lý</button>
+    </div>
+    <div class="header-sep"></div>
+    <button class="btn btn-secondary btn-sm" id="btnSetup">⚙ API Keys</button>
+  </header>
+
+  <main>
+    <div class="tierlist-wrap" id="tierlistWrap"></div>
+
+    <div>
+      <div class="pool-header">
+        <h3>Chưa xếp hạng</h3>
+        <span class="tag" id="poolCount">0 ảnh</span>
+      </div>
+      <div class="pool-items" id="poolItems"></div>
+    </div>
+  </main>
+
+  <div class="toolbar">
+    <label class="upload-label" for="fileInput">+ Thêm ảnh</label>
+    <input type="file" id="fileInput" accept="image/*" multiple>
+
+    <select id="displayMode">
+      <option value="square">Square</option>
+      <option value="landscape">Landscape</option>
+      <option value="portrait">Portrait</option>
+      <option value="round">Round</option>
+      <option value="nocrop">No Crop</option>
+    </select>
+
+    <button class="btn btn-secondary btn-sm" id="btnAddRow">+ Thêm tier</button>
+    <div class="toolbar-sep"></div>
+    <div id="saveStatus"></div>
+    <button class="btn btn-primary btn-sm" id="btnSave">💾 Lưu</button>
+  </div>
+</div>
+
+<!-- ══ UPLOAD PROGRESS ══ -->
+<div class="upload-progress" id="uploadProgress">
+  <div class="up-title">Đang upload ảnh...</div>
+  <div class="up-bar-wrap"><div class="up-bar" id="upBar"></div></div>
+  <div class="up-label" id="upLabel"></div>
+</div>
+
+<!-- ══ ROW EDITOR MODAL ══ -->
+<div class="modal-overlay hidden" id="rowEditorModal">
+  <div class="modal" style="width:420px">
+    <button class="close-btn" data-close="rowEditorModal">✕</button>
+    <h2>Chỉnh sửa Tier</h2>
+    <p class="sub">Tùy chỉnh màu sắc và nhãn</p>
+    <div class="color-grid" id="colorGrid"></div>
+    <label>Nhãn tier</label>
+    <input type="text" id="rowLabel" maxlength="8" placeholder="S, A, B...">
+    <div class="row-actions">
+      <button class="btn btn-secondary" id="btnClearRow">🗑 Xóa ảnh trong tier</button>
+      <button class="btn btn-danger"    id="btnDeleteRow">✕ Xóa tier</button>
+      <button class="btn btn-secondary" id="btnAddAbove">↑ Thêm tier trên</button>
+      <button class="btn btn-secondary" id="btnAddBelow">↓ Thêm tier dưới</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" data-close="rowEditorModal">Hủy</button>
+      <button class="btn btn-primary" id="btnSaveRow">Lưu thay đổi</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SETUP MODAL ══ -->
+<div class="modal-overlay hidden" id="setupModal">
+  <div class="modal">
+    <button class="close-btn" data-close="setupModal">✕</button>
+    <h2>Cài đặt API</h2>
+    <p class="sub">Dữ liệu chỉ lưu trong trình duyệt của bạn.</p>
+    <label>GitHub Personal Access Token <span style="opacity:.5">(scope: gist)</span></label>
+    <input type="password" id="inputPAT" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+    <label>ImgBB API Key</label>
+    <input type="password" id="inputImgBB" placeholder="xxxxxxxxxxxxxxxx" autocomplete="off">
+    <label>Gist ID <span style="opacity:.5">(để trống → tự tạo khi lưu lần đầu)</span></label>
+    <input type="text" id="inputGistID" placeholder="Tự động điền sau lần lưu đầu">
+    <div class="modal-actions">
+      <button class="btn btn-secondary" data-close="setupModal">Đóng</button>
+      <button class="btn btn-primary" id="btnSaveSetup">Lưu cài đặt</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TIERLIST MANAGER MODAL ══ -->
+<div class="modal-overlay hidden" id="tlManagerModal">
+  <div class="modal">
+    <button class="close-btn" data-close="tlManagerModal">✕</button>
+    <h2>Quản lý Tierlist</h2>
+    <p class="sub">Tạo, đổi tên hoặc xóa các tierlist.</p>
+    <div id="tlList"></div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <input type="text" id="newTlName" placeholder="Tên tierlist mới..."
+        style="flex:1;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);
+               border-radius:var(--radius);color:var(--text);font-family:inherit;font-size:.88rem;outline:none">
+      <button class="btn btn-primary" id="btnCreateTl">+ Tạo mới</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════
+//  CONFIGURATION
+//  Replace PASS_HASH with: await sha256("your_password")
+//  Run in console: _genHash("your_password")
+// ══════════════════════════════════════════════════════
+const PASS_HASH = '52cbc3aec93568fc2a1946de38dcb61c84fd17f6cbdb05086b100ae4eb8fe616';
+
+const COLORS = [
+  '#ff6b6b','#ff9f43','#feca57','#f9f871','#a8ff78',
+  '#2ed573','#1ddce8','#74b9ff','#a29bfe','#fd79a8',
+  '#e17055','#636e72','#b2bec3','#dfe6e9',
+];
+
+const DEFAULT_ROWS = () => [
+  { label:'S', color:'#ff6b6b' },
+  { label:'A', color:'#ff9f43' },
+  { label:'B', color:'#feca57' },
+  { label:'C', color:'#a8ff78' },
+  { label:'D', color:'#74b9ff' },
+].map(r => ({ ...r, id: uid(), items: [] }));
+
+// ══════════════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════════════
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2,'0')).join('');
+}
+
+/** Decide black or white text for a given hex background */
+function contrastColor(hex) {
+  const r = parseInt(hex.slice(1,3), 16);
+  const g = parseInt(hex.slice(3,5), 16);
+  const b = parseInt(hex.slice(5,7), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000 > 128 ? '#111' : '#fff';
+}
+
+function readAsDataURL(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════
+let state = { tierlists: [], currentId: null };
+let editingRowIdx = null;   // row index open in editor
+let drag = null;             // { item, fromPool:bool, fromRowId:string|null }
+
+function current() {
+  return state.tierlists.find(t => t.id === state.currentId) ?? null;
+}
+
+function makeDefaultTierlist(name = 'My Tierlist') {
+  return {
+    id: uid(), name, createdAt: Date.now(),
+    rows: DEFAULT_ROWS(),
+    pool: [],
+    displayMode: 'square',
+  };
+}
+
+// ══════════════════════════════════════════════════════
+//  STATUS BAR
+// ══════════════════════════════════════════════════════
+let _statusTimer = null;
+function setStatus(html, cls = '', autoClear = 0) {
+  const el = document.getElementById('saveStatus');
+  el.innerHTML = html;
+  el.className = cls;
+  clearTimeout(_statusTimer);
+  if (autoClear) _statusTimer = setTimeout(() => { el.innerHTML = ''; el.className = ''; }, autoClear);
+}
+
+// ══════════════════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════════════════
+function renderAll() {
+  renderTlSelect();
+  renderTierlist();
+  renderPool();
+}
+
+function renderTlSelect() {
+  const sel = document.getElementById('tlSelect');
+  sel.innerHTML = state.tierlists
+    .map(t => `<option value="${esc(t.id)}" ${t.id === state.currentId ? 'selected' : ''}>${esc(t.name)}</option>`)
+    .join('');
+}
+
+function renderTierlist() {
+  const tl = current();
+  const wrap = document.getElementById('tierlistWrap');
+  if (!tl) { wrap.innerHTML = ''; return; }
+
+  const modeClass = 'mode-' + (tl.displayMode || 'square');
+  wrap.className = `tierlist-wrap ${modeClass}`;
+
+  wrap.innerHTML = tl.rows.map((row, i) => `
+    <div class="tier-row" data-row-id="${esc(row.id)}">
+      <div class="tier-label" style="background:${esc(row.color)};color:${contrastColor(row.color)}">
+        ${esc(row.label)}
+      </div>
+      <div class="tier-items" data-zone="row" data-row-id="${esc(row.id)}">
+        ${row.items.map(item => itemCardHTML(item)).join('')}
+      </div>
+      <div class="tier-controls">
+        <button class="ctrl-btn" data-action="edit-row" data-row-idx="${i}" title="Cài đặt">⚙</button>
+        <button class="ctrl-btn" data-action="move-up"  data-row-idx="${i}" title="Lên">▲</button>
+        <button class="ctrl-btn" data-action="move-down" data-row-idx="${i}" title="Xuống">▼</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderPool() {
+  const tl = current();
+  const pool = document.getElementById('poolItems');
+  const countEl = document.getElementById('poolCount');
+  if (!tl) { pool.innerHTML = ''; countEl.textContent = '0 ảnh'; return; }
+
+  const modeClass = 'mode-' + (tl.displayMode || 'square');
+  pool.className = `pool-items ${modeClass}`;
+  pool.dataset.zone = 'pool';
+
+  if (tl.pool.length === 0) {
+    pool.innerHTML = '<span class="pool-empty">Kéo ảnh vào đây hoặc upload ảnh mới</span>';
+  } else {
+    pool.innerHTML = tl.pool.map(item => itemCardHTML(item)).join('');
+  }
+  countEl.textContent = `${tl.pool.length} ảnh`;
+}
+
+function itemCardHTML(item) {
+  return `
+    <div class="item-card" draggable="true" data-item-id="${esc(item.id)}" title="${esc(item.name)}">
+      <img src="${esc(item.url)}" alt="${esc(item.name)}" loading="lazy">
+      <button class="item-remove" data-action="remove-item" data-item-id="${esc(item.id)}">✕</button>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════
+//  DRAG & DROP  (single unified handler)
+// ══════════════════════════════════════════════════════
+document.addEventListener('dragstart', e => {
+  const card = e.target.closest('.item-card');
+  if (!card) return;
+
+  const tl = current();
+  if (!tl) return;
+
+  const itemId = card.dataset.itemId;
+  // Find which zone the item lives in
+  const zone = card.closest('[data-zone]');
+  const inPool = zone?.dataset.zone === 'pool';
+  const rowId  = zone?.dataset.rowId ?? null;
+
+  let item = null;
+  if (inPool) {
+    item = tl.pool.find(x => x.id === itemId);
+  } else if (rowId) {
+    const row = tl.rows.find(r => r.id === rowId);
+    item = row?.items.find(x => x.id === itemId);
+  }
+  if (!item) return;
+
+  drag = { item, inPool, rowId };
+  card.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  // Required for Firefox
+  e.dataTransfer.setData('text/plain', itemId);
+});
+
+document.addEventListener('dragend', () => {
+  document.querySelectorAll('.item-card.dragging').forEach(c => c.classList.remove('dragging'));
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  drag = null;
+});
+
+document.addEventListener('dragover', e => {
+  const zone = e.target.closest('[data-zone]');
+  if (!zone) return;
+  e.preventDefault();
+  zone.classList.add('drag-over');
+});
+
+document.addEventListener('dragleave', e => {
+  const zone = e.target.closest('[data-zone]');
+  if (zone && !zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+});
+
+document.addEventListener('drop', e => {
+  e.preventDefault();
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  if (!drag) return;
+
+  const zone = e.target.closest('[data-zone]');
+  if (!zone) return;
+
+  const tl = current();
+  if (!tl) return;
+
+  const destIsPool = zone.dataset.zone === 'pool';
+  const destRowId  = zone.dataset.rowId ?? null;
+
+  // Prevent dropping into the same zone (no-op)
+  if (destIsPool && drag.inPool) return;
+  if (!destIsPool && destRowId === drag.rowId) return;
+
+  // Remove from source
+  if (drag.inPool) {
+    tl.pool = tl.pool.filter(x => x.id !== drag.item.id);
+  } else {
+    const srcRow = tl.rows.find(r => r.id === drag.rowId);
+    if (srcRow) srcRow.items = srcRow.items.filter(x => x.id !== drag.item.id);
+  }
+
+  // Add to destination
+  if (destIsPool) {
+    tl.pool.push(drag.item);
+  } else {
+    const destRow = tl.rows.find(r => r.id === destRowId);
+    if (destRow) destRow.items.push(drag.item);
+  }
+
+  drag = null;
+  renderTierlist();
+  renderPool();
+});
+
+// ══════════════════════════════════════════════════════
+//  EVENT DELEGATION  (replaces all inline onclick)
+// ══════════════════════════════════════════════════════
+document.addEventListener('click', e => {
+  // Close modal via overlay click or [data-close] attribute
+  const closeTarget = e.target.closest('[data-close]');
+  if (closeTarget) { closeModal(closeTarget.dataset.close); return; }
+  if (e.target.classList.contains('modal-overlay')) {
+    const modal = e.target.querySelector('.modal')?.closest('.modal-overlay');
+    if (modal) closeModal(modal.id);
+    return;
+  }
+
+  const action = e.target.closest('[data-action]')?.dataset.action;
+  if (!action) return;
+
+  const el = e.target.closest('[data-action]');
+
+  switch (action) {
+    case 'edit-row':   openRowEditor(parseInt(el.dataset.rowIdx)); break;
+    case 'move-up':    moveRow(parseInt(el.dataset.rowIdx), -1);   break;
+    case 'move-down':  moveRow(parseInt(el.dataset.rowIdx),  1);   break;
+    case 'remove-item': removeItem(el.dataset.itemId);             break;
+  }
+});
+
+// ══════════════════════════════════════════════════════
+//  ROW OPERATIONS
+// ══════════════════════════════════════════════════════
+function moveRow(i, dir) {
+  const tl = current(); if (!tl) return;
+  const j = i + dir;
+  if (j < 0 || j >= tl.rows.length) return;
+  [tl.rows[i], tl.rows[j]] = [tl.rows[j], tl.rows[i]];
+  renderTierlist();
+}
+
+function addRow(insertIdx = null) {
+  const tl = current(); if (!tl) return;
+  const newRow = { id: uid(), label: 'NEW', color: '#636e72', items: [] };
+  if (insertIdx === null) {
+    tl.rows.push(newRow);
+  } else {
+    tl.rows.splice(insertIdx, 0, newRow);
+  }
+  renderTierlist();
+}
+
+function openRowEditor(i) {
+  const tl = current(); if (!tl) return;
+  editingRowIdx = i;
+  const row = tl.rows[i];
+
+  // Snapshot selected color as hex into dataset
+  const grid = document.getElementById('colorGrid');
+  grid.innerHTML = COLORS.map(c => `
+    <div class="color-swatch ${c === row.color ? 'active' : ''}"
+         style="background:${c}" data-color="${c}"></div>
+  `).join('');
+
+  // Click on swatch
+  grid.onclick = e => {
+    const sw = e.target.closest('.color-swatch');
+    if (!sw) return;
+    grid.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+    sw.classList.add('active');
+  };
+
+  document.getElementById('rowLabel').value = row.label;
+  openModal('rowEditorModal');
+}
+
+document.getElementById('btnSaveRow').addEventListener('click', () => {
+  const tl = current(); if (!tl || editingRowIdx === null) return;
+  const row = tl.rows[editingRowIdx];
+  const activeSwatch = document.querySelector('#colorGrid .color-swatch.active');
+  if (activeSwatch) row.color = activeSwatch.dataset.color; // always a clean hex
+  const labelVal = document.getElementById('rowLabel').value.trim();
+  if (labelVal) row.label = labelVal;
+  closeModal('rowEditorModal');
+  renderTierlist();
+});
+
+document.getElementById('btnClearRow').addEventListener('click', () => {
+  const tl = current(); if (!tl || editingRowIdx === null) return;
+  const row = tl.rows[editingRowIdx];
+  tl.pool.push(...row.items);
+  row.items = [];
+  closeModal('rowEditorModal');
+  renderTierlist();
+  renderPool();
+});
+
+document.getElementById('btnDeleteRow').addEventListener('click', () => {
+  const tl = current(); if (!tl || editingRowIdx === null) return;
+  if (tl.rows.length === 1) { alert('Không thể xóa tier cuối cùng.'); return; }
+  tl.pool.push(...tl.rows[editingRowIdx].items);
+  tl.rows.splice(editingRowIdx, 1);
+  closeModal('rowEditorModal');
+  renderTierlist();
+  renderPool();
+});
+
+document.getElementById('btnAddAbove').addEventListener('click', () => {
+  const idx = editingRowIdx;
+  closeModal('rowEditorModal');
+  addRow(idx);
+});
+
+document.getElementById('btnAddBelow').addEventListener('click', () => {
+  const idx = editingRowIdx;
+  closeModal('rowEditorModal');
+  addRow(idx + 1);
+});
+
+document.getElementById('btnAddRow').addEventListener('click', () => addRow());
+
+// ══════════════════════════════════════════════════════
+//  REMOVE ITEM  (by id, not index)
+// ══════════════════════════════════════════════════════
+function removeItem(itemId) {
+  const tl = current(); if (!tl) return;
+  tl.pool = tl.pool.filter(x => x.id !== itemId);
+  tl.rows.forEach(r => { r.items = r.items.filter(x => x.id !== itemId); });
+  renderTierlist();
+  renderPool();
+}
+
+// ══════════════════════════════════════════════════════
+//  DISPLAY MODE
+// ══════════════════════════════════════════════════════
+document.getElementById('displayMode').addEventListener('change', e => {
+  const tl = current(); if (!tl) return;
+  tl.displayMode = e.target.value;
+  renderTierlist();
+  renderPool();
+});
+
+// ══════════════════════════════════════════════════════
+//  TIERLIST MANAGER
+// ══════════════════════════════════════════════════════
+document.getElementById('tlSelect').addEventListener('change', e => {
+  state.currentId = e.target.value;
+  renderAll();
+});
+
+document.getElementById('btnTlManager').addEventListener('click', () => {
+  renderTlList();
+  openModal('tlManagerModal');
+});
+
+function renderTlList() {
+  document.getElementById('tlList').innerHTML = state.tierlists.map(t => `
+    <div class="tl-item">
+      <span class="tl-item-name">${esc(t.name)}</span>
+      <span class="tl-item-date">${new Date(t.createdAt).toLocaleDateString('vi')}</span>
+      <button class="btn btn-secondary btn-sm" onclick="renameTl('${esc(t.id)}')">✏</button>
+      ${state.tierlists.length > 1
+        ? `<button class="btn btn-danger btn-sm" onclick="deleteTl('${esc(t.id)}')">✕</button>`
+        : ''}
+    </div>
+  `).join('');
+}
+
+document.getElementById('btnCreateTl').addEventListener('click', () => {
+  const input = document.getElementById('newTlName');
+  const name = input.value.trim();
+  if (!name) return;
+  const tl = makeDefaultTierlist(name);
+  state.tierlists.push(tl);
+  state.currentId = tl.id;
+  input.value = '';
+  renderTlList();
+  renderAll();
+});
+
+document.getElementById('newTlName').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('btnCreateTl').click();
+});
+
+function renameTl(id) {
+  const tl = state.tierlists.find(t => t.id === id);
+  if (!tl) return;
+  const n = prompt('Tên mới:', tl.name);
+  if (n?.trim()) { tl.name = n.trim(); renderTlList(); renderTlSelect(); }
+}
+
+function deleteTl(id) {
+  if (!confirm('Xóa tierlist này? Dữ liệu sẽ mất khi lưu.')) return;
+  state.tierlists = state.tierlists.filter(t => t.id !== id);
+  if (state.currentId === id) state.currentId = state.tierlists[0]?.id ?? null;
+  renderTlList();
+  renderAll();
+}
+
+// ══════════════════════════════════════════════════════
+//  IMAGE UPLOAD → ImgBB
+// ══════════════════════════════════════════════════════
+document.getElementById('fileInput').addEventListener('change', async function () {
+  const files = Array.from(this.files);
+  this.value = ''; // reset input
+  if (!files.length) return;
+
+  const apiKey = localStorage.getItem('tf_imgbb');
+  if (!apiKey) { alert('Vui lòng nhập ImgBB API key trong ⚙ Cài đặt.'); return; }
+
+  const tl = current(); if (!tl) return;
+
+  const prog = document.getElementById('uploadProgress');
+  const bar  = document.getElementById('upBar');
+  const lbl  = document.getElementById('upLabel');
+  prog.classList.add('visible');
+
+  let done = 0, failed = 0;
+
+  for (const file of files) {
+    lbl.textContent = `${done + 1} / ${files.length}: ${file.name}`;
+    try {
+      const b64 = await readAsDataURL(file);
+      const fd  = new FormData();
+      fd.append('image', b64.split(',')[1]);
+      fd.append('name', file.name.replace(/\.[^.]+$/, ''));
+
+      const res  = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, { method: 'POST', body: fd });
+      const data = await res.json();
+
+      if (data.success) {
+        tl.pool.push({
+          id:    uid(),
+          url:   data.data.url,
+          thumb: data.data.thumb?.url ?? data.data.url,
+          name:  file.name.replace(/\.[^.]+$/, ''),
+        });
+        renderPool();
+      } else {
+        console.error('ImgBB error', data);
+        failed++;
+      }
+    } catch (err) {
+      console.error('Upload error', err);
+      failed++;
+    }
+
+    done++;
+    bar.style.width = (done / files.length * 100) + '%';
+  }
+
+  prog.classList.remove('visible');
+  bar.style.width = '0%';
+
+  const msg = failed
+    ? `✓ Upload xong: ${done - failed} thành công, ${failed} thất bại`
+    : `✓ Đã upload ${done} ảnh`;
+  setStatus(msg, 'saved', 3000);
+});
+
+// ══════════════════════════════════════════════════════
+//  GIST — SAVE / LOAD
+// ══════════════════════════════════════════════════════
+async function saveToGist() {
+  const pat    = localStorage.getItem('tf_pat');
+  const gistId = localStorage.getItem('tf_gist');
+
+  const body = {
+    description: 'TierForge Data',
+    public: false,
+    files: { 'tierforge.json': { content: JSON.stringify(state) } },
+  };
+
+  const url    = gistId ? `https://api.github.com/gists/${gistId}` : 'https://api.github.com/gists';
+  const method = gistId ? 'PATCH' : 'POST';
+
+  const res = await fetch(url, {
+    method,
+    headers: { Authorization: `token ${pat}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`GitHub API: HTTP ${res.status}`);
+
+  const data = await res.json();
+  localStorage.setItem('tf_gist', data.id);
+  document.getElementById('inputGistID').value = data.id;
+}
+
+async function loadFromGist() {
+  const pat    = localStorage.getItem('tf_pat');
+  const gistId = localStorage.getItem('tf_gist');
+  if (!gistId) return false;
+
+  const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+    headers: { Authorization: `token ${pat}` },
+  });
+  if (!res.ok) throw new Error(`GitHub API: HTTP ${res.status}`);
+
+  const data    = await res.json();
+  const content = data.files['tierforge.json']?.content;
+  if (!content) throw new Error('tierforge.json không tìm thấy trong Gist');
+
+  const parsed = JSON.parse(content);
+  // Migrate: ensure all items have an id
+  (parsed.tierlists ?? []).forEach(tl => {
+    tl.pool = (tl.pool ?? []).map(it => ({ id: uid(), ...it }));
+    (tl.rows ?? []).forEach(r => {
+      r.items = (r.items ?? []).map(it => ({ id: uid(), ...it }));
+    });
+  });
+  state = parsed;
+  if (!state.currentId && state.tierlists.length) state.currentId = state.tierlists[0].id;
+  return true;
+}
+
+document.getElementById('btnSave').addEventListener('click', saveAll);
+
+async function saveAll() {
+  const pat = localStorage.getItem('tf_pat');
+  if (!pat) { openSetup(); return; }
+
+  setStatus('<span class="spinner"></span> Đang lưu...', 'saving');
+  localStorage.setItem('tf_local', JSON.stringify(state)); // local backup
+
+  try {
+    await saveToGist();
+    setStatus('✓ Đã lưu lên Gist', 'saved', 2500);
+  } catch (err) {
+    setStatus('Lỗi khi lưu: ' + err.message, 'error');
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  SETUP MODAL
+// ══════════════════════════════════════════════════════
+document.getElementById('btnSetup').addEventListener('click', openSetup);
+
+function openSetup() {
+  document.getElementById('inputPAT').value    = localStorage.getItem('tf_pat')   ?? '';
+  document.getElementById('inputImgBB').value  = localStorage.getItem('tf_imgbb') ?? '';
+  document.getElementById('inputGistID').value = localStorage.getItem('tf_gist')  ?? '';
+  openModal('setupModal');
+}
+
+document.getElementById('btnSaveSetup').addEventListener('click', () => {
+  const pat   = document.getElementById('inputPAT').value.trim();
+  const imgbb = document.getElementById('inputImgBB').value.trim();
+  const gist  = document.getElementById('inputGistID').value.trim();
+  if (pat)   localStorage.setItem('tf_pat',   pat);
+  if (imgbb) localStorage.setItem('tf_imgbb', imgbb);
+  if (gist)  localStorage.setItem('tf_gist',  gist);
+  else       localStorage.removeItem('tf_gist');
+  closeModal('setupModal');
+  setStatus('✓ Đã lưu cài đặt', 'saved', 1500);
+});
+
+// ══════════════════════════════════════════════════════
+//  MODAL HELPERS
+// ══════════════════════════════════════════════════════
+function openModal(id)  { document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+// Close on overlay backdrop click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(overlay.id); });
+});
+
+// ══════════════════════════════════════════════════════
+//  PASSWORD GATE
+// ══════════════════════════════════════════════════════
+async function checkPass() {
+  const val = document.getElementById('gateInput').value;
+  if (!val) return;
+
+  // Special case: if PASS_HASH is still placeholder, let owner set their password
+  if (PASS_HASH === 'REPLACE_WITH_YOUR_HASH') {
+    const h = await sha256(val);
+    document.getElementById('gate-error').textContent =
+      `Chưa đặt mật khẩu. Hash của "${val}" là: ${h} — điền vào PASS_HASH trong code.`;
+    return;
+  }
+
+  const hash = await sha256(val);
+  if (hash === PASS_HASH) {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display  = 'flex';
+    init();
+  } else {
+    const errEl = document.getElementById('gate-error');
+    errEl.textContent = 'Mật khẩu không đúng.';
+    document.getElementById('gateInput').value = '';
+    setTimeout(() => { errEl.textContent = ''; }, 2000);
+  }
+}
+
+document.getElementById('gateBtn').addEventListener('click', checkPass);
+document.getElementById('gateInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkPass();
+});
+
+// ══════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════
+async function init() {
+  const pat   = localStorage.getItem('tf_pat');
+  const imgbb = localStorage.getItem('tf_imgbb');
+
+  if (!pat || !imgbb) {
+    openSetup();
+    setStatus('Vui lòng nhập API keys để bắt đầu.', 'error');
+    state = { tierlists: [makeDefaultTierlist()], currentId: null };
+    state.currentId = state.tierlists[0].id;
+    renderAll();
+    return;
+  }
+
+  setStatus('<span class="spinner"></span> Đang tải...', 'saving');
+
+  try {
+    const loaded = await loadFromGist();
+    if (!loaded) {
+      state = { tierlists: [makeDefaultTierlist()], currentId: null };
+      state.currentId = state.tierlists[0].id;
+    }
+    setStatus('✓ Đã tải xong', 'saved', 2000);
+  } catch (err) {
+    setStatus('Không tải được Gist — dùng bản cục bộ.', 'error', 4000);
+    const local = localStorage.getItem('tf_local');
+    if (local) {
+      try { state = JSON.parse(local); }
+      catch { state = { tierlists: [makeDefaultTierlist()], currentId: null }; }
+    } else {
+      state = { tierlists: [makeDefaultTierlist()], currentId: null };
+    }
+    if (!state.tierlists.length) state.tierlists.push(makeDefaultTierlist());
+    if (!state.currentId) state.currentId = state.tierlists[0].id;
+  }
+
+  document.getElementById('displayMode').value = current()?.displayMode ?? 'square';
+  renderAll();
+}
+
+// ══════════════════════════════════════════════════════
+//  CONSOLE HELPERS
+// ══════════════════════════════════════════════════════
+window._genHash = async pass => {
+  const h = await sha256(pass);
+  console.log(`%cHash cho "${pass}":`, 'color:#6c63ff;font-weight:bold');
+  console.log(`%c${h}`, 'color:#4caf50;font-size:1.1em');
+  console.log('%cĐiền giá trị này vào PASS_HASH trong code.', 'color:#9090a0');
+};
+</script>
+</body>
+</html>
