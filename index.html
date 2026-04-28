@@ -6,137 +6,318 @@
 <title>TierForge</title>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* ── TOKENS ── */
+/* ════════════════════════════════════════════════
+   DESIGN TOKENS
+════════════════════════════════════════════════ */
 :root {
-  --bg:      #0e0e10;
-  --bg2:     #18181b;
-  --bg3:     #222226;
-  --border:  #2e2e35;
-  --text:    #e8e8f0;
-  --text2:   #9090a0;
-  --accent:  #6c63ff;
-  --danger:  #e05252;
-  --green:   #4caf50;
-  --radius:  6px;
-  --label-w: 110px;
-  --img-h:   72px;
+  --bg:       #0e0e10;
+  --bg2:      #18181b;
+  --bg3:      #222226;
+  --border:   #2e2e35;
+  --text:     #e8e8f0;
+  --text2:    #9090a0;
+  --accent:   #6c63ff;
+  --danger:   #e05252;
+  --green:    #4caf50;
+  --gold:     #f5a623;
+  --radius:   6px;
+  --label-w:  110px;
+  --img-h:    80px;
+  --img-pad:  5px;
+  --img-gap:  4px;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ════════════════════════════════════════════════
+   RESET & BASE
+════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   background: var(--bg);
   color: var(--text);
   font-family: 'Be Vietnam Pro', sans-serif;
   min-height: 100vh;
+  line-height: 1.5;
 }
 
-/* ── PASSWORD GATE ── */
-#gate {
+/* ════════════════════════════════════════════════
+   LANDING — mode select
+════════════════════════════════════════════════ */
+#landing {
   position: fixed; inset: 0;
   background: var(--bg);
   display: flex; align-items: center; justify-content: center;
   z-index: 9999;
 }
-.gate-box {
+.landing-box {
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 52px 44px;
-  width: 340px;
+  width: 400px;
   text-align: center;
 }
-.gate-box h1 {
-  font-family: 'Be Vietnam Pro', sans-serif; font-weight: 800;
-  font-size: 3rem; letter-spacing: 1px;
+.landing-box h1 {
+  font-weight: 800; font-size: 3rem; letter-spacing: 1px;
   margin-bottom: 6px;
 }
-.gate-box p { color: var(--text2); font-size: 0.85rem; margin-bottom: 28px; }
-.gate-box input {
-  width: 100%; padding: 12px 16px;
-  background: var(--bg3); border: 1px solid var(--border);
-  border-radius: var(--radius); color: var(--text);
-  font-size: 1rem; font-family: inherit;
-  outline: none; text-align: center; letter-spacing: 6px; margin-bottom: 12px;
+.landing-tagline { color: var(--text2); font-size: 0.85rem; margin-bottom: 36px; }
+.mode-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.mode-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 22px 14px;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+.mode-card:hover        { border-color: var(--accent); background: rgba(108,99,255,.07); }
+.mode-card.owner:hover  { border-color: var(--gold);   background: rgba(245,166,35,.07); }
+.mode-icon  { font-size: 1.9rem; margin-bottom: 8px; }
+.mode-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+.mode-desc  { color: var(--text2); font-size: 0.75rem; line-height: 1.45; }
+
+/* ════════════════════════════════════════════════
+   AUTH SCREENS  (owner + guest)
+════════════════════════════════════════════════ */
+.auth-screen {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: none; align-items: center; justify-content: center;
+  z-index: 9998;
+}
+.auth-screen.visible { display: flex; }
+
+.auth-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 44px 40px;
+  width: 420px;
+  max-width: 96vw;
+  max-height: 92vh;
+  overflow-y: auto;
+}
+.auth-box h2 { font-weight: 800; font-size: 1.75rem; margin-bottom: 5px; }
+.auth-sub    { color: var(--text2); font-size: 0.82rem; margin-bottom: 26px; }
+
+/* Shared form elements inside auth screens */
+.auth-input {
+  width: 100%;
+  padding: 10px 13px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  margin-bottom: 16px;
   transition: border-color .2s;
 }
-.gate-box input:focus { border-color: var(--accent); }
-.gate-box .gate-btn {
-  width: 100%; padding: 12px;
-  background: var(--accent); border: none; border-radius: var(--radius);
-  color: #fff; font-family: inherit; font-size: 0.95rem; font-weight: 600;
-  cursor: pointer; transition: opacity .2s;
-}
-.gate-box .gate-btn:hover { opacity: .85; }
-#gate-error { color: var(--danger); font-size: 0.82rem; margin-top: 10px; min-height: 18px; }
+.auth-input:focus { border-color: var(--accent); }
 
-/* ── APP SHELL ── */
+/* Password field: centred + spaced dots */
+.auth-input.pass {
+  text-align: center;
+  letter-spacing: 4px;
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+
+.auth-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+.auth-label-hint {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+  opacity: .5;
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity .2s;
+  margin-bottom: 4px;
+}
+.auth-btn:hover    { opacity: .85; }
+.auth-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.auth-back {
+  display: block;
+  margin: 12px auto 0;
+  background: none;
+  border: none;
+  color: var(--text2);
+  font-family: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: color .15s;
+}
+.auth-back:hover { color: var(--text); }
+
+.auth-error {
+  color: var(--danger);
+  font-size: 0.82rem;
+  margin-top: 10px;
+  min-height: 18px;
+  word-break: break-all;
+}
+
+/* Step indicator */
+.step-indicator {
+  display: flex; gap: 6px; justify-content: center;
+  margin-bottom: 22px;
+}
+.step-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background .2s;
+}
+.step-dot.active { background: var(--accent); }
+.step-dot.done   { background: var(--green); }
+
+/* Multi-step panels */
+.setup-step        { display: none; }
+.setup-step.active { display: block; }
+
+/* Info callout box */
+.info-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 11px 14px;
+  font-size: 0.81rem;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.info-box a    { color: var(--accent); }
+.info-box code {
+  background: var(--bg);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 0.78rem;
+  color: var(--text);
+  word-break: break-all;
+}
+
+/* ════════════════════════════════════════════════
+   SESSION BADGE
+════════════════════════════════════════════════ */
+.session-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem; font-weight: 600;
+}
+.session-badge.owner {
+  background: rgba(245,166,35,.13); color: var(--gold);
+  border: 1px solid rgba(245,166,35,.28);
+}
+.session-badge.guest {
+  background: rgba(108,99,255,.13); color: var(--accent);
+  border: 1px solid rgba(108,99,255,.28);
+}
+
+/* ════════════════════════════════════════════════
+   APP SHELL
+════════════════════════════════════════════════ */
 #app { display: none; flex-direction: column; min-height: 100vh; }
 
-/* ── HEADER ── */
+/* ════════════════════════════════════════════════
+   HEADER
+════════════════════════════════════════════════ */
 header {
-  display: flex; align-items: center; gap: 14px;
+  display: flex; align-items: center; gap: 12px;
   padding: 12px 24px;
-  background: var(--bg2); border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
   position: sticky; top: 0; z-index: 100;
 }
-header h1 {
-  font-family: 'Be Vietnam Pro', sans-serif; font-weight: 800;
-  font-size: 1.8rem; letter-spacing: 0.5px;
-  flex-shrink: 0;
-}
-.header-sep { flex: 1; }
+.header-logo { font-weight: 800; font-size: 1.8rem; letter-spacing: 0.5px; flex-shrink: 0; }
+.header-sep  { flex: 1; }
 .tl-selector { display: flex; align-items: center; gap: 8px; }
 .tl-selector select {
-  background: var(--bg3); border: 1px solid var(--border);
-  color: var(--text); padding: 7px 12px;
-  border-radius: var(--radius); font-family: inherit; font-size: 0.88rem;
-  outline: none; min-width: 160px; cursor: pointer;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 7px 12px;
+  border-radius: var(--radius);
+  font-family: inherit; font-size: 0.88rem;
+  outline: none; min-width: 160px;
+  cursor: pointer; transition: border-color .15s;
 }
+.tl-selector select:focus { border-color: var(--accent); }
 
-/* ── BUTTONS ── */
+/* ════════════════════════════════════════════════
+   BUTTONS
+════════════════════════════════════════════════ */
 .btn {
-  padding: 8px 18px; border-radius: var(--radius);
-  border: 1px solid transparent; font-family: inherit;
-  font-size: 0.85rem; font-weight: 600; cursor: pointer;
-  transition: opacity .15s, border-color .15s;
-  white-space: nowrap;
+  padding: 8px 18px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  font-family: inherit; font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; transition: opacity .15s;
+  white-space: nowrap; line-height: 1.4;
 }
-.btn:hover { opacity: .82; }
-.btn-primary  { background: var(--accent); color: #fff; border-color: var(--accent); }
-.btn-secondary { background: var(--bg3); color: var(--text2); border-color: var(--border); }
-.btn-danger   { background: var(--danger); color: #fff; border-color: var(--danger); }
+.btn:hover  { opacity: .82; }
+.btn:active { opacity: .65; }
+.btn-primary   { background: var(--accent); color: #fff;         border-color: var(--accent); }
+.btn-secondary { background: var(--bg3);    color: var(--text2); border-color: var(--border); }
+.btn-danger    { background: var(--danger); color: #fff;         border-color: var(--danger); }
 .btn-sm { padding: 6px 13px; font-size: 0.8rem; }
 
-/* ── MAIN ── */
+/* ════════════════════════════════════════════════
+   MAIN
+════════════════════════════════════════════════ */
 main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px; }
 
-/* ── TIERLIST ── */
-.tierlist-wrap {
-  border: 1px solid var(--border);
-  border-radius: 8px; overflow: hidden;
+/* ════════════════════════════════════════════════
+   TIERLIST WRAPPER
+════════════════════════════════════════════════ */
+.tierlist-wrap { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.tierlist-empty {
+  padding: 32px; text-align: center;
+  color: var(--text2); font-size: 0.9rem;
 }
 
-/* ── TIER ROW ── */
+/* ════════════════════════════════════════════════
+   TIER ROW  (CSS Grid — label stretches full height)
+════════════════════════════════════════════════ */
 .tier-row {
-  display: flex; align-items: stretch;
+  display: grid;
+  grid-template-columns: var(--label-w) 1fr auto;
   border-bottom: 1px solid var(--border);
-  min-height: calc(var(--img-h) + 16px);
 }
 .tier-row:last-child { border-bottom: none; }
 
 .tier-label {
-  width: var(--label-w); min-width: var(--label-w);
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Be Vietnam Pro', sans-serif; font-weight: 800;
-  font-size: 1.6rem; letter-spacing: 0.5px;
-  user-select: none; flex-shrink: 0;
+  font-weight: 800; font-size: 1.6rem; letter-spacing: 0.5px;
+  user-select: none;
+  min-height: calc(var(--img-pad) * 2 + var(--img-h));
 }
 
 .tier-items {
-  flex: 1;
   display: flex; flex-wrap: wrap; align-content: flex-start;
-  gap: 4px; padding: 6px;
-  background: var(--bg2);
-  transition: background .15s;
+  gap: var(--img-gap); padding: var(--img-pad);
+  background: var(--bg2); transition: background .15s;
 }
 .tier-items.drag-over {
   background: rgba(108,99,255,.1);
@@ -146,75 +327,80 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
 
 .tier-controls {
   display: flex; flex-direction: column;
-  justify-content: center; gap: 4px;
-  padding: 6px 8px;
+  justify-content: flex-start; gap: 4px;
+  padding: var(--img-pad) 8px;
   background: var(--bg); border-left: 1px solid var(--border);
-  flex-shrink: 0;
 }
 .ctrl-btn {
   background: var(--bg3); border: 1px solid var(--border);
   color: var(--text2); width: 30px; height: 28px;
   border-radius: 4px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  font-size: 0.8rem; transition: border-color .15s, color .15s;
+  font-size: 0.8rem; flex-shrink: 0;
+  transition: border-color .15s, color .15s;
 }
 .ctrl-btn:hover { border-color: var(--accent); color: var(--text); }
 
-/* ── ITEM CARD ── */
+/* ════════════════════════════════════════════════
+   ITEM CARD  (outline not border — no layout shift)
+════════════════════════════════════════════════ */
 .item-card {
   position: relative; cursor: grab;
   border-radius: 4px; overflow: hidden;
-  border: 2px solid transparent;
-  transition: border-color .15s, transform .15s;
-  flex-shrink: 0; user-select: none;
+  outline: 2px solid transparent; outline-offset: -2px;
+  transition: outline-color .15s, transform .15s, opacity .15s;
+  flex-shrink: 0; user-select: none; line-height: 0;
 }
-.item-card:hover  { border-color: var(--accent); transform: scale(1.05); z-index: 2; }
-.item-card.dragging { opacity: .35; cursor: grabbing; }
-
+.item-card:hover    { outline-color: var(--accent); transform: scale(1.05); z-index: 2; }
+.item-card.dragging { opacity: .3; cursor: grabbing; }
 .item-card img { display: block; object-fit: cover; }
 
 .item-remove {
-  position: absolute; top: 2px; right: 2px;
-  background: rgba(0,0,0,.75); border: none; color: #fff;
-  border-radius: 50%; width: 18px; height: 18px;
-  font-size: 9px; cursor: pointer;
-  display: none; align-items: center; justify-content: center;
-  line-height: 1;
+  position: absolute; top: 3px; right: 3px;
+  background: rgba(0,0,0,.78); border: none; color: #fff;
+  border-radius: 50%; width: 18px; height: 18px; font-size: 9px;
+  cursor: pointer; display: none;
+  align-items: center; justify-content: center;
+  line-height: 1; transition: background .15s;
 }
+.item-remove:hover { background: var(--danger); }
 .item-card:hover .item-remove { display: flex; }
 
-/* ── IMAGE DISPLAY MODES ── */
-.mode-square    .item-card img { width: var(--img-h); height: var(--img-h); }
-.mode-landscape .item-card img { width: calc(var(--img-h) * 1.5); height: var(--img-h); }
+/* ════════════════════════════════════════════════
+   IMAGE DISPLAY MODES
+════════════════════════════════════════════════ */
+.mode-square    .item-card img { width: var(--img-h);              height: var(--img-h); }
+.mode-landscape .item-card img { width: calc(var(--img-h) * 1.5);  height: var(--img-h); }
 .mode-portrait  .item-card img { width: calc(var(--img-h) * 0.75); height: var(--img-h); }
-.mode-round     .item-card, .mode-round .item-card img { border-radius: 50%; }
+.mode-round     .item-card,
+.mode-round     .item-card img { border-radius: 50%; }
 .mode-round     .item-card img { width: var(--img-h); height: var(--img-h); }
 .mode-nocrop    .item-card img { width: auto; height: var(--img-h); object-fit: contain; background: var(--bg3); }
 
-/* ── POOL ── */
+/* ════════════════════════════════════════════════
+   UNRANKED POOL
+════════════════════════════════════════════════ */
 .pool-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-.pool-header h3 {
-  font-family: 'Be Vietnam Pro', sans-serif; font-weight: 800;
-  font-size: 1.1rem; letter-spacing: 0.5px; color: var(--text2);
-}
+.pool-header h3 { font-weight: 800; font-size: 1.1rem; letter-spacing: 0.5px; color: var(--text2); }
 .pool-items {
-  min-height: 90px;
-  display: flex; flex-wrap: wrap; gap: 6px; padding: 10px;
+  min-height: calc(var(--img-pad) * 2 + var(--img-h));
+  display: flex; flex-wrap: wrap; gap: var(--img-gap); padding: var(--img-pad);
   background: var(--bg2); border: 1px solid var(--border);
   border-radius: 8px; transition: background .15s;
 }
 .pool-items.drag-over {
   background: rgba(108,99,255,.1);
-  outline: 2px dashed var(--accent);
-  outline-offset: -3px;
+  outline: 2px dashed var(--accent); outline-offset: -3px;
 }
 .pool-empty {
   color: var(--text2); font-size: 0.82rem;
   display: flex; align-items: center; justify-content: center;
-  width: 100%; pointer-events: none;
+  width: 100%; pointer-events: none; padding: 12px 0;
 }
 
-/* ── TOOLBAR ── */
+/* ════════════════════════════════════════════════
+   TOOLBAR
+════════════════════════════════════════════════ */
 .toolbar {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
   padding: 12px 24px;
@@ -225,20 +411,21 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
   background: var(--bg3); border: 1px solid var(--border);
   color: var(--text); padding: 7px 12px;
   border-radius: var(--radius); font-family: inherit; font-size: 0.85rem;
-  outline: none; cursor: pointer;
+  outline: none; cursor: pointer; transition: border-color .15s;
 }
+.toolbar select:focus { border-color: var(--accent); }
 .upload-label {
-  padding: 7px 16px;
-  background: var(--bg3); border: 1px solid var(--border);
-  border-radius: var(--radius); color: var(--text);
-  font-size: 0.85rem; font-weight: 500; cursor: pointer;
-  transition: border-color .15s, color .15s; white-space: nowrap;
+  padding: 7px 16px; background: var(--bg3);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  color: var(--text); font-size: 0.85rem; font-weight: 500;
+  cursor: pointer; white-space: nowrap;
+  transition: border-color .15s, color .15s;
 }
 .upload-label:hover { border-color: var(--accent); color: var(--accent); }
 #fileInput { display: none; }
 .toolbar-sep { flex: 1; }
 
-/* ── STATUS ── */
+/* Save status */
 #saveStatus {
   font-size: 0.78rem; color: var(--text2);
   display: flex; align-items: center; gap: 5px;
@@ -247,72 +434,75 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
 #saveStatus.saved  { color: var(--green); }
 #saveStatus.error  { color: var(--danger); }
 
-/* ── MODALS ── */
+/* ════════════════════════════════════════════════
+   MODALS
+════════════════════════════════════════════════ */
 .modal-overlay {
   position: fixed; inset: 0;
   background: rgba(0,0,0,.72);
   display: flex; align-items: center; justify-content: center;
-  z-index: 1000;
+  z-index: 1000; padding: 16px;
 }
 .modal-overlay.hidden { display: none; }
 .modal {
   background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 12px; padding: 32px; width: 460px;
-  max-width: 95vw; position: relative;
-  max-height: 90vh; overflow-y: auto;
+  border-radius: 12px; padding: 32px;
+  width: 460px; max-width: 100%;
+  position: relative; max-height: 90vh; overflow-y: auto;
 }
-.modal h2 {
-  font-family: 'Be Vietnam Pro', sans-serif; font-weight: 800;
-  font-size: 1.6rem; letter-spacing: 0.5px; margin-bottom: 4px;
-}
+.modal h2 { font-weight: 800; font-size: 1.5rem; letter-spacing: 0.5px; margin-bottom: 4px; }
 .modal .sub { color: var(--text2); font-size: 0.82rem; margin-bottom: 22px; }
 .modal label {
   display: block; font-size: 0.78rem; font-weight: 600;
   color: var(--text2); text-transform: uppercase; letter-spacing: 1px;
   margin-bottom: 5px;
 }
-.modal input[type=text],
-.modal input[type=password] {
+.modal-input {
   width: 100%; padding: 10px 13px;
   background: var(--bg3); border: 1px solid var(--border);
   border-radius: var(--radius); color: var(--text);
   font-family: inherit; font-size: 0.9rem; outline: none;
   margin-bottom: 16px; transition: border-color .2s;
 }
-.modal input:focus { border-color: var(--accent); }
+.modal-input:focus { border-color: var(--accent); }
 .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
 .close-btn {
   position: absolute; top: 14px; right: 16px;
   background: none; border: none; color: var(--text2);
-  font-size: 1.3rem; cursor: pointer; line-height: 1;
+  font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 4px;
   transition: color .15s;
 }
 .close-btn:hover { color: var(--text); }
 
-/* ── ROW EDITOR ── */
+/* ════════════════════════════════════════════════
+   ROW EDITOR
+════════════════════════════════════════════════ */
 .color-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
 .color-swatch {
   width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
-  border: 3px solid transparent; transition: border-color .15s, transform .15s;
-  flex-shrink: 0;
+  outline: 3px solid transparent; outline-offset: 2px;
+  transition: outline-color .15s, transform .15s; flex-shrink: 0;
 }
 .color-swatch:hover  { transform: scale(1.12); }
-.color-swatch.active { border-color: #fff !important; transform: scale(1.15); }
-.row-actions {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px;
-}
+.color-swatch.active { outline-color: #fff; transform: scale(1.15); }
+.row-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
 
-/* ── TL MANAGER ── */
-.tl-item {
+/* ════════════════════════════════════════════════
+   TIERLIST MANAGER
+════════════════════════════════════════════════ */
+.tl-list-item {
   display: flex; align-items: center; gap: 10px;
   padding: 10px 14px;
   background: var(--bg3); border: 1px solid var(--border);
   border-radius: var(--radius); margin-bottom: 8px;
 }
-.tl-item-name { flex: 1; font-size: 0.9rem; }
-.tl-item-date { color: var(--text2); font-size: 0.75rem; white-space: nowrap; }
+.tl-list-name { flex: 1; font-size: 0.9rem; }
+.tl-list-date { color: var(--text2); font-size: 0.75rem; white-space: nowrap; }
+.tl-create-row { display: flex; gap: 8px; margin-top: 16px; }
 
-/* ── MISC ── */
+/* ════════════════════════════════════════════════
+   MISC
+════════════════════════════════════════════════ */
 .tag {
   display: inline-block; padding: 2px 9px;
   background: var(--bg3); border: 1px solid var(--border);
@@ -321,66 +511,190 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
 .spinner {
   display: inline-block; width: 13px; height: 13px;
   border: 2px solid var(--border); border-top-color: var(--accent);
-  border-radius: 50%; animation: spin .55s linear infinite;
-  flex-shrink: 0;
+  border-radius: 50%; animation: spin .55s linear infinite; flex-shrink: 0;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── UPLOAD PROGRESS ── */
-.upload-progress {
-  position: fixed; bottom: 70px; right: 24px;
+/* ════════════════════════════════════════════════
+   UPLOAD PROGRESS TOAST
+════════════════════════════════════════════════ */
+.upload-toast {
+  position: fixed; bottom: 72px; right: 24px;
   background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 10px; padding: 14px 18px; min-width: 220px;
+  border-radius: 10px; padding: 14px 18px; min-width: 230px;
   z-index: 200; display: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
 }
-.upload-progress.visible { display: block; }
-.up-title { font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; }
-.up-bar-wrap { background: var(--bg3); border-radius: 4px; height: 6px; overflow: hidden; }
-.up-bar { background: var(--accent); height: 100%; transition: width .3s; width: 0%; }
-.up-label { font-size: 0.75rem; color: var(--text2); margin-top: 5px; }
+.upload-toast.visible { display: block; }
+.toast-title    { font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; }
+.toast-bar-wrap { background: var(--bg3); border-radius: 4px; height: 6px; overflow: hidden; }
+.toast-bar      { background: var(--accent); height: 100%; width: 0%; transition: width .25s ease; }
+.toast-label    { font-size: 0.75rem; color: var(--text2); margin-top: 6px; }
 </style>
 </head>
 <body>
 
-<!-- ══ PASSWORD GATE ══ -->
-<div id="gate">
-  <div class="gate-box">
+<!-- ════════ LANDING ════════ -->
+<div id="landing">
+  <div class="landing-box">
     <h1>TierForge</h1>
-    <p>Nhập mật khẩu để tiếp tục</p>
-    <input type="password" id="gateInput" placeholder="••••••••" autocomplete="current-password">
-    <button class="gate-btn" id="gateBtn">Vào →</button>
-    <div id="gate-error"></div>
+    <p class="landing-tagline">Chọn chế độ để bắt đầu</p>
+    <div class="mode-btns">
+      <div class="mode-card owner" id="btnModeOwner">
+        <div class="mode-icon">👑</div>
+        <div class="mode-title">Owner</div>
+        <div class="mode-desc">Đăng nhập bằng mật khẩu, sync trên mọi thiết bị</div>
+      </div>
+      <div class="mode-card" id="btnModeGuest">
+        <div class="mode-icon">🎯</div>
+        <div class="mode-title">Guest</div>
+        <div class="mode-desc">Dùng API key của riêng bạn, hoàn toàn độc lập</div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ══ APP ══ -->
+<!-- ════════ OWNER AUTH ════════ -->
+<div class="auth-screen" id="ownerGate">
+  <div class="auth-box">
+
+    <!-- Step 0: returning user — enter password -->
+    <div class="setup-step active" id="ownerStep0">
+      <h2>👑 Owner</h2>
+      <p class="auth-sub">Nhập mật khẩu để giải mã API keys và đăng nhập</p>
+      <input class="auth-input pass" type="password" id="ownerPassInput"
+        placeholder="••••••••" autocomplete="current-password">
+      <button class="auth-btn" id="btnOwnerLogin">Đăng nhập →</button>
+      <div class="auth-error" id="ownerLoginError"></div>
+      <button class="auth-back" id="btnOwnerBack">← Quay lại</button>
+    </div>
+
+    <!-- Step 1: first-time — set password -->
+    <div class="setup-step" id="ownerStep1">
+      <div class="step-indicator">
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+      </div>
+      <h2>Tạo mật khẩu</h2>
+      <p class="auth-sub">Mật khẩu mã hóa API keys. Không thể khôi phục nếu quên.</p>
+      <input class="auth-input pass" type="password" id="setupPass1" placeholder="Mật khẩu mới">
+      <input class="auth-input pass" type="password" id="setupPass2" placeholder="Nhập lại mật khẩu" style="margin-top:4px">
+      <button class="auth-btn" id="btnSetupPass">Tiếp tục →</button>
+      <div class="auth-error" id="setupPassError"></div>
+      <button class="auth-back" id="btnSetupBack1">← Quay lại</button>
+    </div>
+
+    <!-- Step 2: enter API keys -->
+    <div class="setup-step" id="ownerStep2">
+      <div class="step-indicator">
+        <div class="step-dot done"></div>
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+      </div>
+      <h2>API Keys</h2>
+      <p class="auth-sub">Keys sẽ được mã hóa AES-256 trước khi lưu.</p>
+      <label class="auth-label" for="setupPAT">
+        GitHub PAT <span class="auth-label-hint">(scope: gist)</span>
+      </label>
+      <input class="auth-input" type="password" id="setupPAT"
+        placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+      <label class="auth-label" for="setupImgBB">ImgBB API Key</label>
+      <input class="auth-input" type="password" id="setupImgBB"
+        placeholder="xxxxxxxxxxxxxxxx" autocomplete="off">
+      <label class="auth-label" for="setupDataGist">
+        Data Gist ID <span class="auth-label-hint">(để trống → tự tạo)</span>
+      </label>
+      <input class="auth-input" type="text" id="setupDataGist"
+        placeholder="Tự động tạo khi lưu lần đầu">
+      <button class="auth-btn" id="btnSetupKeys">Tiếp tục →</button>
+      <div class="auth-error" id="setupKeysError"></div>
+    </div>
+
+    <!-- Step 3: bootstrap Gist ID -->
+    <div class="setup-step" id="ownerStep3">
+      <div class="step-indicator">
+        <div class="step-dot done"></div>
+        <div class="step-dot done"></div>
+        <div class="step-dot active"></div>
+      </div>
+      <h2>Bootstrap Gist</h2>
+      <p class="auth-sub">Gist công khai lưu keys đã mã hóa, dùng để đăng nhập từ mọi thiết bị.</p>
+      <div class="info-box">
+        1. Vào <a href="https://gist.github.com" target="_blank">gist.github.com</a>
+           → tạo Gist mới (nội dung bất kỳ)<br>
+        2. Copy ID trong URL:
+           <code>gist.github.com/user/<strong>ID_Ở_ĐÂY</strong></code><br>
+        3. Dán vào ô dưới → Lưu → sau đó hardcode vào
+           <code>BOOTSTRAP_GIST_ID</code> trong <code>index.html</code> và re-deploy
+      </div>
+      <label class="auth-label" for="setupBootstrapGist">Bootstrap Gist ID</label>
+      <input class="auth-input" type="text" id="setupBootstrapGist"
+        placeholder="4a8b2c1d3e5f6a7b8c9d">
+      <button class="auth-btn" id="btnSetupFinish">Mã hóa & Lưu →</button>
+      <div class="auth-error" id="setupFinishError"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════ GUEST AUTH ════════ -->
+<div class="auth-screen" id="guestGate">
+  <div class="auth-box">
+    <h2>🎯 Guest</h2>
+    <p class="auth-sub">Nhập API keys của bạn. Dữ liệu tách biệt hoàn toàn với Owner.</p>
+    <label class="auth-label" for="guestPAT">
+      GitHub PAT <span class="auth-label-hint">(scope: gist)</span>
+    </label>
+    <input class="auth-input" type="password" id="guestPAT"
+      placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+    <label class="auth-label" for="guestImgBB">ImgBB API Key</label>
+    <input class="auth-input" type="password" id="guestImgBB"
+      placeholder="xxxxxxxxxxxxxxxx" autocomplete="off">
+    <label class="auth-label" for="guestGistId">
+      Gist ID <span class="auth-label-hint">(để trống → tự tạo)</span>
+    </label>
+    <input class="auth-input" type="text" id="guestGistId"
+      placeholder="Tự động tạo khi lưu lần đầu">
+    <div class="info-box">
+      Keys được lưu vào <strong>localStorage</strong> trình duyệt này.
+      Trên thiết bị khác chỉ cần nhập lại.
+    </div>
+    <button class="auth-btn" id="btnGuestStart">Bắt đầu →</button>
+    <div class="auth-error" id="guestError"></div>
+    <button class="auth-back" id="btnGuestBack">← Quay lại</button>
+  </div>
+</div>
+
+<!-- ════════ APP ════════ -->
 <div id="app">
+
   <header>
-    <h1>TierForge</h1>
+    <span class="header-logo">TierForge</span>
+    <span class="session-badge" id="sessionBadge"></span>
     <div class="tl-selector">
       <select id="tlSelect"></select>
       <button class="btn btn-secondary btn-sm" id="btnTlManager">Quản lý</button>
     </div>
     <div class="header-sep"></div>
     <button class="btn btn-secondary btn-sm" id="btnSetup">⚙ API Keys</button>
+    <button class="btn btn-secondary btn-sm" id="btnLogout">Đăng xuất</button>
   </header>
 
   <main>
     <div class="tierlist-wrap" id="tierlistWrap"></div>
-
     <div>
       <div class="pool-header">
         <h3>Chưa xếp hạng</h3>
         <span class="tag" id="poolCount">0 ảnh</span>
       </div>
-      <div class="pool-items" id="poolItems"></div>
+      <div class="pool-items" id="poolItems" data-zone="pool"></div>
     </div>
   </main>
 
   <div class="toolbar">
     <label class="upload-label" for="fileInput">+ Thêm ảnh</label>
     <input type="file" id="fileInput" accept="image/*" multiple>
-
     <select id="displayMode">
       <option value="square">Square</option>
       <option value="landscape">Landscape</option>
@@ -388,30 +702,30 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
       <option value="round">Round</option>
       <option value="nocrop">No Crop</option>
     </select>
-
     <button class="btn btn-secondary btn-sm" id="btnAddRow">+ Thêm tier</button>
     <div class="toolbar-sep"></div>
     <div id="saveStatus"></div>
     <button class="btn btn-primary btn-sm" id="btnSave">💾 Lưu</button>
   </div>
+
+</div><!-- /#app -->
+
+<!-- ════════ UPLOAD TOAST ════════ -->
+<div class="upload-toast" id="uploadToast">
+  <div class="toast-title">Đang upload ảnh...</div>
+  <div class="toast-bar-wrap"><div class="toast-bar" id="toastBar"></div></div>
+  <div class="toast-label" id="toastLabel"></div>
 </div>
 
-<!-- ══ UPLOAD PROGRESS ══ -->
-<div class="upload-progress" id="uploadProgress">
-  <div class="up-title">Đang upload ảnh...</div>
-  <div class="up-bar-wrap"><div class="up-bar" id="upBar"></div></div>
-  <div class="up-label" id="upLabel"></div>
-</div>
-
-<!-- ══ ROW EDITOR MODAL ══ -->
+<!-- ════════ ROW EDITOR MODAL ════════ -->
 <div class="modal-overlay hidden" id="rowEditorModal">
-  <div class="modal" style="width:420px">
-    <button class="close-btn" data-close="rowEditorModal">✕</button>
+  <div class="modal" style="width:430px">
+    <button class="close-btn" data-close="rowEditorModal" aria-label="Đóng">✕</button>
     <h2>Chỉnh sửa Tier</h2>
     <p class="sub">Tùy chỉnh màu sắc và nhãn</p>
     <div class="color-grid" id="colorGrid"></div>
-    <label>Nhãn tier</label>
-    <input type="text" id="rowLabel" maxlength="8" placeholder="S, A, B...">
+    <label for="rowLabel">Nhãn tier</label>
+    <input class="modal-input" type="text" id="rowLabel" maxlength="8" placeholder="S, A, B...">
     <div class="row-actions">
       <button class="btn btn-secondary" id="btnClearRow">🗑 Xóa ảnh trong tier</button>
       <button class="btn btn-danger"    id="btnDeleteRow">✕ Xóa tier</button>
@@ -420,41 +734,49 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
     </div>
     <div class="modal-actions">
       <button class="btn btn-secondary" data-close="rowEditorModal">Hủy</button>
-      <button class="btn btn-primary" id="btnSaveRow">Lưu thay đổi</button>
+      <button class="btn btn-primary"   id="btnSaveRow">Lưu thay đổi</button>
     </div>
   </div>
 </div>
 
-<!-- ══ SETUP MODAL ══ -->
+<!-- ════════ SETUP MODAL (in-app key management) ════════ -->
 <div class="modal-overlay hidden" id="setupModal">
   <div class="modal">
-    <button class="close-btn" data-close="setupModal">✕</button>
+    <button class="close-btn" data-close="setupModal" aria-label="Đóng">✕</button>
     <h2>Cài đặt API</h2>
-    <p class="sub">Dữ liệu chỉ lưu trong trình duyệt của bạn.</p>
-    <label>GitHub Personal Access Token <span style="opacity:.5">(scope: gist)</span></label>
-    <input type="password" id="inputPAT" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
-    <label>ImgBB API Key</label>
-    <input type="password" id="inputImgBB" placeholder="xxxxxxxxxxxxxxxx" autocomplete="off">
-    <label>Gist ID <span style="opacity:.5">(để trống → tự tạo khi lưu lần đầu)</span></label>
-    <input type="text" id="inputGistID" placeholder="Tự động điền sau lần lưu đầu">
+    <p class="sub" id="setupModalSub"></p>
+    <label for="inputPAT">
+      GitHub Personal Access Token
+      <span style="text-transform:none;letter-spacing:0;font-weight:400;opacity:.5">(scope: gist)</span>
+    </label>
+    <input class="modal-input" type="password" id="inputPAT"
+      placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+    <label for="inputImgBB">ImgBB API Key</label>
+    <input class="modal-input" type="password" id="inputImgBB"
+      placeholder="xxxxxxxxxxxxxxxx" autocomplete="off">
+    <label for="inputGistID">
+      Data Gist ID
+      <span style="text-transform:none;letter-spacing:0;font-weight:400;opacity:.5">(để trống → tự tạo khi lưu lần đầu)</span>
+    </label>
+    <input class="modal-input" type="text" id="inputGistID"
+      placeholder="Tự động điền sau lần lưu đầu">
     <div class="modal-actions">
       <button class="btn btn-secondary" data-close="setupModal">Đóng</button>
-      <button class="btn btn-primary" id="btnSaveSetup">Lưu cài đặt</button>
+      <button class="btn btn-primary"   id="btnSaveSetup">Lưu cài đặt</button>
     </div>
   </div>
 </div>
 
-<!-- ══ TIERLIST MANAGER MODAL ══ -->
+<!-- ════════ TIERLIST MANAGER MODAL ════════ -->
 <div class="modal-overlay hidden" id="tlManagerModal">
   <div class="modal">
-    <button class="close-btn" data-close="tlManagerModal">✕</button>
+    <button class="close-btn" data-close="tlManagerModal" aria-label="Đóng">✕</button>
     <h2>Quản lý Tierlist</h2>
     <p class="sub">Tạo, đổi tên hoặc xóa các tierlist.</p>
     <div id="tlList"></div>
-    <div style="display:flex;gap:8px;margin-top:16px">
-      <input type="text" id="newTlName" placeholder="Tên tierlist mới..."
-        style="flex:1;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);
-               border-radius:var(--radius);color:var(--text);font-family:inherit;font-size:.88rem;outline:none">
+    <div class="tl-create-row">
+      <input class="modal-input" type="text" id="newTlName"
+        placeholder="Tên tierlist mới..." style="margin-bottom:0;flex:1">
       <button class="btn btn-primary" id="btnCreateTl">+ Tạo mới</button>
     </div>
   </div>
@@ -463,12 +785,12 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
 <script>
 'use strict';
 
-// ══════════════════════════════════════════════════════
-//  CONFIGURATION
-//  Replace PASS_HASH with: await sha256("your_password")
-//  Run in console: _genHash("your_password")
-// ══════════════════════════════════════════════════════
-const PASS_HASH = '52cbc3aec93568fc2a1946de38dcb61c84fd17f6cbdb05086b100ae4eb8fe616';
+/* ════════════════════════════════════════════════════════
+   CONFIGURATION
+   Sau khi hoàn thành owner setup lần đầu, hardcode
+   Bootstrap Gist ID của bạn vào đây rồi re-deploy.
+════════════════════════════════════════════════════════ */
+const BOOTSTRAP_GIST_ID = 'REPLACE_WITH_BOOTSTRAP_GIST_ID';
 
 const COLORS = [
   '#ff6b6b','#ff9f43','#feca57','#f9f871','#a8ff78',
@@ -476,36 +798,28 @@ const COLORS = [
   '#e17055','#636e72','#b2bec3','#dfe6e9',
 ];
 
-const DEFAULT_ROWS = () => [
-  { label:'S', color:'#ff6b6b' },
-  { label:'A', color:'#ff9f43' },
-  { label:'B', color:'#feca57' },
-  { label:'C', color:'#a8ff78' },
-  { label:'D', color:'#74b9ff' },
-].map(r => ({ ...r, id: uid(), items: [] }));
+/* ════════════════════════════════════════════════════════
+   SESSION  — in-memory only, never persisted as plain-text
+════════════════════════════════════════════════════════ */
+const session = {
+  mode:      null,   // 'owner' | 'guest'
+  pat:       null,
+  imgbb:     null,
+  gistId:    null,   // data gist
+  _password: null,   // owner only — kept for re-encryption on key change
+};
 
-// ══════════════════════════════════════════════════════
-//  UTILS
-// ══════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════
+   UTILITIES
+════════════════════════════════════════════════════════ */
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
 function esc(s) {
-  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2,'0')).join('');
-}
-
-/** Decide black or white text for a given hex background */
-function contrastColor(hex) {
-  const r = parseInt(hex.slice(1,3), 16);
-  const g = parseInt(hex.slice(3,5), 16);
-  const b = parseInt(hex.slice(5,7), 16);
-  return (r * 299 + g * 587 + b * 114) / 1000 > 128 ? '#111' : '#fff';
+  return String(s ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function readAsDataURL(file) {
@@ -517,41 +831,158 @@ function readAsDataURL(file) {
   });
 }
 
-// ══════════════════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════════════════
-let state = { tierlists: [], currentId: null };
-let editingRowIdx = null;   // row index open in editor
-let drag = null;             // { item, fromPool:bool, fromRowId:string|null }
+function contrastColor(hex) {
+  const r = parseInt(hex.slice(1,3), 16);
+  const g = parseInt(hex.slice(3,5), 16);
+  const b = parseInt(hex.slice(5,7), 16);
+  return (r*299 + g*587 + b*114) / 1000 > 128 ? '#111111' : '#ffffff';
+}
 
-function current() {
-  return state.tierlists.find(t => t.id === state.currentId) ?? null;
+/* ════════════════════════════════════════════════════════
+   AES-GCM CRYPTO  (PBKDF2 / SHA-256 / 200k iterations)
+   Bundle format:  base64(salt) : base64(iv) : base64(ciphertext)
+════════════════════════════════════════════════════════ */
+async function _deriveKey(password, salt) {
+  const keyMat = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(password),
+    'PBKDF2', false, ['deriveKey']
+  );
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations: 200_000, hash: 'SHA-256' },
+    keyMat,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
+}
+
+const _b64enc = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const _b64dec = s   => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+
+async function encryptStr(plaintext, password) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv   = crypto.getRandomValues(new Uint8Array(12));
+  const key  = await _deriveKey(password, salt);
+  const ct   = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv }, key, new TextEncoder().encode(plaintext)
+  );
+  return `${_b64enc(salt)}:${_b64enc(iv)}:${_b64enc(ct)}`;
+}
+
+async function decryptStr(bundle, password) {
+  const parts = bundle.split(':');
+  if (parts.length !== 3) throw new Error('Bundle format không hợp lệ.');
+  const salt = _b64dec(parts[0]);
+  const iv   = _b64dec(parts[1]);
+  const ct   = _b64dec(parts[2]);
+  const key  = await _deriveKey(password, salt);
+  let plain;
+  try {
+    plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
+  } catch {
+    throw new Error('Sai mật khẩu hoặc dữ liệu bị hỏng.');
+  }
+  return new TextDecoder().decode(plain);
+}
+
+/* ════════════════════════════════════════════════════════
+   BOOTSTRAP GIST
+   • Stored as public Gist (safe — content is AES-256 encrypted)
+   • Fetch requires no auth on new devices
+   • keys shape: { pat, imgbb, dataGistId }
+════════════════════════════════════════════════════════ */
+async function saveEncryptedKeys(pat, password, keys) {
+  if (BOOTSTRAP_GIST_ID === 'REPLACE_WITH_BOOTSTRAP_GIST_ID') {
+    throw new Error('BOOTSTRAP_GIST_ID chưa được cấu hình trong index.html.');
+  }
+  const bundle = await encryptStr(JSON.stringify(keys), password);
+  const res = await fetch(`https://api.github.com/gists/${BOOTSTRAP_GIST_ID}`, {
+    method: 'PATCH',
+    headers: { 'Authorization': `token ${pat}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      description: 'TierForge Bootstrap',
+      public: true,
+      files: { 'tf_bootstrap.enc': { content: bundle } },
+    }),
+  });
+  if (!res.ok) throw new Error(`GitHub API: HTTP ${res.status}`);
+}
+
+async function loadAndDecryptKeys(password) {
+  if (BOOTSTRAP_GIST_ID === 'REPLACE_WITH_BOOTSTRAP_GIST_ID') {
+    throw new Error('BOOTSTRAP_GIST_ID chưa được cấu hình.');
+  }
+  // No auth — Gist is public
+  const res = await fetch(`https://api.github.com/gists/${BOOTSTRAP_GIST_ID}`);
+  if (!res.ok) throw new Error(`Không fetch được Gist: HTTP ${res.status}`);
+  const data   = await res.json();
+  const bundle = data.files['tf_bootstrap.enc']?.content;
+  if (!bundle) throw new Error('tf_bootstrap.enc không tìm thấy trong Gist.');
+  const plain = await decryptStr(bundle, password);
+  return JSON.parse(plain);
+}
+
+/* ════════════════════════════════════════════════════════
+   DATA FACTORIES
+════════════════════════════════════════════════════════ */
+function makeDefaultRows() {
+  return [
+    { label: 'S', color: '#ff6b6b' },
+    { label: 'A', color: '#ff9f43' },
+    { label: 'B', color: '#feca57' },
+    { label: 'C', color: '#a8ff78' },
+    { label: 'D', color: '#74b9ff' },
+  ].map(r => ({ ...r, id: uid(), items: [] }));
 }
 
 function makeDefaultTierlist(name = 'My Tierlist') {
   return {
-    id: uid(), name, createdAt: Date.now(),
-    rows: DEFAULT_ROWS(),
+    id: uid(), name,
+    createdAt: Date.now(),
+    rows: makeDefaultRows(),
     pool: [],
     displayMode: 'square',
   };
 }
 
-// ══════════════════════════════════════════════════════
-//  STATUS BAR
-// ══════════════════════════════════════════════════════
+function freshState() {
+  const tl = makeDefaultTierlist();
+  return { tierlists: [tl], currentId: tl.id };
+}
+
+/* ════════════════════════════════════════════════════════
+   APP STATE
+════════════════════════════════════════════════════════ */
+let state        = freshState();
+let editingRowId = null;
+let drag         = null;
+let isDirty      = false;  // unsaved changes flag
+
+function current() {
+  return state.tierlists.find(t => t.id === state.currentId) ?? null;
+}
+
+function markDirty() {
+  isDirty = true;
+}
+
+/* ════════════════════════════════════════════════════════
+   STATUS BAR
+════════════════════════════════════════════════════════ */
 let _statusTimer = null;
 function setStatus(html, cls = '', autoClear = 0) {
   const el = document.getElementById('saveStatus');
   el.innerHTML = html;
   el.className = cls;
   clearTimeout(_statusTimer);
-  if (autoClear) _statusTimer = setTimeout(() => { el.innerHTML = ''; el.className = ''; }, autoClear);
+  if (autoClear > 0) {
+    _statusTimer = setTimeout(() => { el.innerHTML = ''; el.className = ''; }, autoClear);
+  }
 }
 
-// ══════════════════════════════════════════════════════
-//  RENDER
-// ══════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════
+   RENDER
+════════════════════════════════════════════════════════ */
 function renderAll() {
   renderTlSelect();
   renderTierlist();
@@ -559,92 +990,86 @@ function renderAll() {
 }
 
 function renderTlSelect() {
-  const sel = document.getElementById('tlSelect');
-  sel.innerHTML = state.tierlists
-    .map(t => `<option value="${esc(t.id)}" ${t.id === state.currentId ? 'selected' : ''}>${esc(t.name)}</option>`)
+  document.getElementById('tlSelect').innerHTML = state.tierlists
+    .map(t => `<option value="${esc(t.id)}"${t.id === state.currentId ? ' selected' : ''}>
+        ${esc(t.name)}</option>`)
     .join('');
 }
 
 function renderTierlist() {
-  const tl = current();
+  const tl   = current();
   const wrap = document.getElementById('tierlistWrap');
-  if (!tl) { wrap.innerHTML = ''; return; }
-
-  const modeClass = 'mode-' + (tl.displayMode || 'square');
-  wrap.className = `tierlist-wrap ${modeClass}`;
-
+  if (!tl || tl.rows.length === 0) {
+    wrap.className = 'tierlist-wrap';
+    wrap.innerHTML = '<div class="tierlist-empty">Chưa có tier nào. Nhấn "+ Thêm tier" để bắt đầu.</div>';
+    return;
+  }
+  wrap.className = `tierlist-wrap mode-${tl.displayMode || 'square'}`;
   wrap.innerHTML = tl.rows.map((row, i) => `
     <div class="tier-row" data-row-id="${esc(row.id)}">
-      <div class="tier-label" style="background:${esc(row.color)};color:${contrastColor(row.color)}">
+      <div class="tier-label"
+        style="background:${esc(row.color)};color:${contrastColor(row.color)}">
         ${esc(row.label)}
       </div>
       <div class="tier-items" data-zone="row" data-row-id="${esc(row.id)}">
         ${row.items.map(item => itemCardHTML(item)).join('')}
       </div>
       <div class="tier-controls">
-        <button class="ctrl-btn" data-action="edit-row" data-row-idx="${i}" title="Cài đặt">⚙</button>
-        <button class="ctrl-btn" data-action="move-up"  data-row-idx="${i}" title="Lên">▲</button>
-        <button class="ctrl-btn" data-action="move-down" data-row-idx="${i}" title="Xuống">▼</button>
+        <button class="ctrl-btn" data-action="edit-row"
+          data-row-id="${esc(row.id)}" title="Cài đặt">⚙</button>
+        <button class="ctrl-btn" data-action="move-up"
+          data-row-idx="${i}" title="Lên">▲</button>
+        <button class="ctrl-btn" data-action="move-down"
+          data-row-idx="${i}" title="Xuống">▼</button>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function renderPool() {
-  const tl = current();
-  const pool = document.getElementById('poolItems');
-  const countEl = document.getElementById('poolCount');
-  if (!tl) { pool.innerHTML = ''; countEl.textContent = '0 ảnh'; return; }
-
-  const modeClass = 'mode-' + (tl.displayMode || 'square');
-  pool.className = `pool-items ${modeClass}`;
-  pool.dataset.zone = 'pool';
-
-  if (tl.pool.length === 0) {
-    pool.innerHTML = '<span class="pool-empty">Kéo ảnh vào đây hoặc upload ảnh mới</span>';
-  } else {
-    pool.innerHTML = tl.pool.map(item => itemCardHTML(item)).join('');
+  const tl      = current();
+  const poolEl  = document.getElementById('poolItems');
+  const counter = document.getElementById('poolCount');
+  if (!tl) {
+    poolEl.innerHTML = '';
+    counter.textContent = '0 ảnh';
+    return;
   }
-  countEl.textContent = `${tl.pool.length} ảnh`;
+  poolEl.className    = `pool-items mode-${tl.displayMode || 'square'}`;
+  poolEl.dataset.zone = 'pool';
+  poolEl.innerHTML    = tl.pool.length === 0
+    ? '<span class="pool-empty">Kéo ảnh vào đây hoặc upload ảnh mới</span>'
+    : tl.pool.map(item => itemCardHTML(item)).join('');
+  counter.textContent = `${tl.pool.length} ảnh`;
 }
 
 function itemCardHTML(item) {
-  return `
-    <div class="item-card" draggable="true" data-item-id="${esc(item.id)}" title="${esc(item.name)}">
-      <img src="${esc(item.url)}" alt="${esc(item.name)}" loading="lazy">
-      <button class="item-remove" data-action="remove-item" data-item-id="${esc(item.id)}">✕</button>
-    </div>`;
+  return `<div class="item-card" draggable="true"
+    data-item-id="${esc(item.id)}" title="${esc(item.name)}">
+    <img src="${esc(item.url)}" alt="${esc(item.name)}" loading="lazy">
+    <button class="item-remove" data-action="remove-item"
+      data-item-id="${esc(item.id)}" aria-label="Xóa">✕</button>
+  </div>`;
 }
 
-// ══════════════════════════════════════════════════════
-//  DRAG & DROP  (single unified handler)
-// ══════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════
+   DRAG & DROP
+════════════════════════════════════════════════════════ */
 document.addEventListener('dragstart', e => {
   const card = e.target.closest('.item-card');
   if (!card) return;
-
   const tl = current();
   if (!tl) return;
-
   const itemId = card.dataset.itemId;
-  // Find which zone the item lives in
-  const zone = card.closest('[data-zone]');
+  const zone   = card.closest('[data-zone]');
   const inPool = zone?.dataset.zone === 'pool';
   const rowId  = zone?.dataset.rowId ?? null;
-
-  let item = null;
-  if (inPool) {
-    item = tl.pool.find(x => x.id === itemId);
-  } else if (rowId) {
-    const row = tl.rows.find(r => r.id === rowId);
-    item = row?.items.find(x => x.id === itemId);
-  }
+  const item   = inPool
+    ? tl.pool.find(x => x.id === itemId)
+    : tl.rows.find(r => r.id === rowId)?.items.find(x => x.id === itemId);
   if (!item) return;
-
   drag = { item, inPool, rowId };
   card.classList.add('dragging');
   e.dataTransfer.effectAllowed = 'move';
-  // Required for Firefox
   e.dataTransfer.setData('text/plain', itemId);
 });
 
@@ -670,20 +1095,15 @@ document.addEventListener('drop', e => {
   e.preventDefault();
   document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
   if (!drag) return;
-
   const zone = e.target.closest('[data-zone]');
-  if (!zone) return;
-
+  if (!zone) { drag = null; return; }
   const tl = current();
-  if (!tl) return;
-
+  if (!tl)  { drag = null; return; }
   const destIsPool = zone.dataset.zone === 'pool';
   const destRowId  = zone.dataset.rowId ?? null;
-
-  // Prevent dropping into the same zone (no-op)
-  if (destIsPool && drag.inPool) return;
-  if (!destIsPool && destRowId === drag.rowId) return;
-
+  // No-op: same destination
+  if (destIsPool && drag.inPool)               { drag = null; return; }
+  if (!destIsPool && destRowId === drag.rowId) { drag = null; return; }
   // Remove from source
   if (drag.inPool) {
     tl.pool = tl.pool.filter(x => x.id !== drag.item.id);
@@ -691,7 +1111,6 @@ document.addEventListener('drop', e => {
     const srcRow = tl.rows.find(r => r.id === drag.rowId);
     if (srcRow) srcRow.items = srcRow.items.filter(x => x.id !== drag.item.id);
   }
-
   // Add to destination
   if (destIsPool) {
     tl.pool.push(drag.item);
@@ -699,156 +1118,169 @@ document.addEventListener('drop', e => {
     const destRow = tl.rows.find(r => r.id === destRowId);
     if (destRow) destRow.items.push(drag.item);
   }
-
   drag = null;
+  markDirty();
   renderTierlist();
   renderPool();
 });
 
-// ══════════════════════════════════════════════════════
-//  EVENT DELEGATION  (replaces all inline onclick)
-// ══════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════
+   GLOBAL EVENT DELEGATION
+════════════════════════════════════════════════════════ */
 document.addEventListener('click', e => {
-  // Close modal via overlay click or [data-close] attribute
-  const closeTarget = e.target.closest('[data-close]');
-  if (closeTarget) { closeModal(closeTarget.dataset.close); return; }
-  if (e.target.classList.contains('modal-overlay')) {
-    const modal = e.target.querySelector('.modal')?.closest('.modal-overlay');
-    if (modal) closeModal(modal.id);
-    return;
-  }
-
-  const action = e.target.closest('[data-action]')?.dataset.action;
-  if (!action) return;
-
-  const el = e.target.closest('[data-action]');
-
+  // Modal close buttons
+  const closeBtn = e.target.closest('[data-close]');
+  if (closeBtn) { closeModal(closeBtn.dataset.close); return; }
+  // Click outside modal
+  if (e.target.classList.contains('modal-overlay')) { closeModal(e.target.id); return; }
+  // Data-action handlers
+  const actionEl = e.target.closest('[data-action]');
+  if (!actionEl) return;
+  const { action, rowId, rowIdx, itemId, tlId } = actionEl.dataset;
   switch (action) {
-    case 'edit-row':   openRowEditor(parseInt(el.dataset.rowIdx)); break;
-    case 'move-up':    moveRow(parseInt(el.dataset.rowIdx), -1);   break;
-    case 'move-down':  moveRow(parseInt(el.dataset.rowIdx),  1);   break;
-    case 'remove-item': removeItem(el.dataset.itemId);             break;
+    case 'edit-row':    openRowEditor(rowId);          break;
+    case 'move-up':     moveRow(parseInt(rowIdx), -1); break;
+    case 'move-down':   moveRow(parseInt(rowIdx),  1); break;
+    case 'remove-item': removeItem(itemId);            break;
+    case 'rename-tl':   renameTl(tlId);                break;
+    case 'delete-tl':   deleteTl(tlId);                break;
   }
 });
 
-// ══════════════════════════════════════════════════════
-//  ROW OPERATIONS
-// ══════════════════════════════════════════════════════
-function moveRow(i, dir) {
-  const tl = current(); if (!tl) return;
-  const j = i + dir;
+/* ════════════════════════════════════════════════════════
+   ROW OPERATIONS
+════════════════════════════════════════════════════════ */
+function moveRow(idx, dir) {
+  const tl = current();
+  if (!tl) return;
+  const j = idx + dir;
   if (j < 0 || j >= tl.rows.length) return;
-  [tl.rows[i], tl.rows[j]] = [tl.rows[j], tl.rows[i]];
+  [tl.rows[idx], tl.rows[j]] = [tl.rows[j], tl.rows[idx]];
+  markDirty();
   renderTierlist();
 }
 
 function addRow(insertIdx = null) {
-  const tl = current(); if (!tl) return;
-  const newRow = { id: uid(), label: 'NEW', color: '#636e72', items: [] };
-  if (insertIdx === null) {
-    tl.rows.push(newRow);
-  } else {
-    tl.rows.splice(insertIdx, 0, newRow);
-  }
+  const tl  = current();
+  if (!tl) return;
+  const row = { id: uid(), label: 'NEW', color: '#636e72', items: [] };
+  if (insertIdx === null) tl.rows.push(row);
+  else tl.rows.splice(insertIdx, 0, row);
+  markDirty();
   renderTierlist();
 }
 
-function openRowEditor(i) {
-  const tl = current(); if (!tl) return;
-  editingRowIdx = i;
-  const row = tl.rows[i];
-
-  // Snapshot selected color as hex into dataset
+function openRowEditor(rowId) {
+  const tl  = current();
+  if (!tl) return;
+  const row = tl.rows.find(r => r.id === rowId);
+  if (!row) return;
+  editingRowId = rowId;
   const grid = document.getElementById('colorGrid');
-  grid.innerHTML = COLORS.map(c => `
-    <div class="color-swatch ${c === row.color ? 'active' : ''}"
-         style="background:${c}" data-color="${c}"></div>
-  `).join('');
-
-  // Click on swatch
+  grid.innerHTML = COLORS.map(c =>
+    `<div class="color-swatch ${c === row.color ? 'active' : ''}"
+      data-color="${c}" style="background:${c}"></div>`
+  ).join('');
   grid.onclick = e => {
     const sw = e.target.closest('.color-swatch');
     if (!sw) return;
     grid.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
     sw.classList.add('active');
   };
-
   document.getElementById('rowLabel').value = row.label;
   openModal('rowEditorModal');
 }
 
 document.getElementById('btnSaveRow').addEventListener('click', () => {
-  const tl = current(); if (!tl || editingRowIdx === null) return;
-  const row = tl.rows[editingRowIdx];
-  const activeSwatch = document.querySelector('#colorGrid .color-swatch.active');
-  if (activeSwatch) row.color = activeSwatch.dataset.color; // always a clean hex
-  const labelVal = document.getElementById('rowLabel').value.trim();
-  if (labelVal) row.label = labelVal;
+  const tl  = current();
+  if (!tl || !editingRowId) return;
+  const row = tl.rows.find(r => r.id === editingRowId);
+  if (!row) return;
+  const active = document.querySelector('#colorGrid .color-swatch.active');
+  if (active) row.color = active.dataset.color;
+  const label = document.getElementById('rowLabel').value.trim();
+  if (label) row.label = label;
+  markDirty();
   closeModal('rowEditorModal');
   renderTierlist();
 });
 
 document.getElementById('btnClearRow').addEventListener('click', () => {
-  const tl = current(); if (!tl || editingRowIdx === null) return;
-  const row = tl.rows[editingRowIdx];
+  const tl  = current();
+  if (!tl || !editingRowId) return;
+  const row = tl.rows.find(r => r.id === editingRowId);
+  if (!row) return;
   tl.pool.push(...row.items);
   row.items = [];
+  markDirty();
   closeModal('rowEditorModal');
   renderTierlist();
   renderPool();
 });
 
 document.getElementById('btnDeleteRow').addEventListener('click', () => {
-  const tl = current(); if (!tl || editingRowIdx === null) return;
+  const tl = current();
+  if (!tl || !editingRowId) return;
   if (tl.rows.length === 1) { alert('Không thể xóa tier cuối cùng.'); return; }
-  tl.pool.push(...tl.rows[editingRowIdx].items);
-  tl.rows.splice(editingRowIdx, 1);
+  const idx = tl.rows.findIndex(r => r.id === editingRowId);
+  if (idx === -1) return;
+  tl.pool.push(...tl.rows[idx].items);
+  tl.rows.splice(idx, 1);
+  markDirty();
   closeModal('rowEditorModal');
   renderTierlist();
   renderPool();
 });
 
 document.getElementById('btnAddAbove').addEventListener('click', () => {
-  const idx = editingRowIdx;
+  const tl  = current();
+  if (!tl || !editingRowId) return;
+  const idx = tl.rows.findIndex(r => r.id === editingRowId);
   closeModal('rowEditorModal');
-  addRow(idx);
+  if (idx !== -1) addRow(idx);
 });
 
 document.getElementById('btnAddBelow').addEventListener('click', () => {
-  const idx = editingRowIdx;
+  const tl  = current();
+  if (!tl || !editingRowId) return;
+  const idx = tl.rows.findIndex(r => r.id === editingRowId);
   closeModal('rowEditorModal');
-  addRow(idx + 1);
+  if (idx !== -1) addRow(idx + 1);
 });
 
 document.getElementById('btnAddRow').addEventListener('click', () => addRow());
 
-// ══════════════════════════════════════════════════════
-//  REMOVE ITEM  (by id, not index)
-// ══════════════════════════════════════════════════════
 function removeItem(itemId) {
-  const tl = current(); if (!tl) return;
+  const tl = current();
+  if (!tl) return;
   tl.pool = tl.pool.filter(x => x.id !== itemId);
   tl.rows.forEach(r => { r.items = r.items.filter(x => x.id !== itemId); });
+  markDirty();
   renderTierlist();
   renderPool();
 }
 
-// ══════════════════════════════════════════════════════
-//  DISPLAY MODE
-// ══════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════
+   DISPLAY MODE
+════════════════════════════════════════════════════════ */
 document.getElementById('displayMode').addEventListener('change', e => {
-  const tl = current(); if (!tl) return;
+  const tl = current();
+  if (!tl) return;
   tl.displayMode = e.target.value;
+  markDirty();
   renderTierlist();
   renderPool();
 });
 
-// ══════════════════════════════════════════════════════
-//  TIERLIST MANAGER
-// ══════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════
+   TIERLIST MANAGER
+════════════════════════════════════════════════════════ */
 document.getElementById('tlSelect').addEventListener('change', e => {
   state.currentId = e.target.value;
-  renderAll();
+  const tl = current();
+  if (tl) document.getElementById('displayMode').value = tl.displayMode ?? 'square';
+  renderTierlist();
+  renderPool();
 });
 
 document.getElementById('btnTlManager').addEventListener('click', () => {
@@ -857,80 +1289,92 @@ document.getElementById('btnTlManager').addEventListener('click', () => {
 });
 
 function renderTlList() {
+  const canDelete = state.tierlists.length > 1;
   document.getElementById('tlList').innerHTML = state.tierlists.map(t => `
-    <div class="tl-item">
-      <span class="tl-item-name">${esc(t.name)}</span>
-      <span class="tl-item-date">${new Date(t.createdAt).toLocaleDateString('vi')}</span>
-      <button class="btn btn-secondary btn-sm" onclick="renameTl('${esc(t.id)}')">✏</button>
-      ${state.tierlists.length > 1
-        ? `<button class="btn btn-danger btn-sm" onclick="deleteTl('${esc(t.id)}')">✕</button>`
+    <div class="tl-list-item">
+      <span class="tl-list-name">${esc(t.name)}</span>
+      <span class="tl-list-date">${new Date(t.createdAt).toLocaleDateString('vi')}</span>
+      <button class="btn btn-secondary btn-sm"
+        data-action="rename-tl" data-tl-id="${esc(t.id)}">✏</button>
+      ${canDelete
+        ? `<button class="btn btn-danger btn-sm"
+            data-action="delete-tl" data-tl-id="${esc(t.id)}">✕</button>`
         : ''}
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-document.getElementById('btnCreateTl').addEventListener('click', () => {
+document.getElementById('btnCreateTl').addEventListener('click', createTierlist);
+document.getElementById('newTlName').addEventListener('keydown', e => {
+  if (e.key === 'Enter') createTierlist();
+});
+
+function createTierlist() {
   const input = document.getElementById('newTlName');
-  const name = input.value.trim();
+  const name  = input.value.trim();
   if (!name) return;
   const tl = makeDefaultTierlist(name);
   state.tierlists.push(tl);
   state.currentId = tl.id;
   input.value = '';
+  markDirty();
   renderTlList();
   renderAll();
-});
-
-document.getElementById('newTlName').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('btnCreateTl').click();
-});
+}
 
 function renameTl(id) {
   const tl = state.tierlists.find(t => t.id === id);
   if (!tl) return;
   const n = prompt('Tên mới:', tl.name);
-  if (n?.trim()) { tl.name = n.trim(); renderTlList(); renderTlSelect(); }
+  if (n?.trim()) {
+    tl.name = n.trim();
+    markDirty();
+    renderTlList();
+    renderTlSelect();
+  }
 }
 
 function deleteTl(id) {
-  if (!confirm('Xóa tierlist này? Dữ liệu sẽ mất khi lưu.')) return;
+  if (!confirm('Xóa tierlist này? Dữ liệu sẽ mất sau khi lưu.')) return;
   state.tierlists = state.tierlists.filter(t => t.id !== id);
   if (state.currentId === id) state.currentId = state.tierlists[0]?.id ?? null;
+  markDirty();
   renderTlList();
   renderAll();
 }
 
-// ══════════════════════════════════════════════════════
-//  IMAGE UPLOAD → ImgBB
-// ══════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════
+   IMAGE UPLOAD → ImgBB
+════════════════════════════════════════════════════════ */
 document.getElementById('fileInput').addEventListener('change', async function () {
   const files = Array.from(this.files);
-  this.value = ''; // reset input
+  this.value  = '';
   if (!files.length) return;
+  if (!session.imgbb) {
+    alert('Vui lòng cấu hình ImgBB API key trong ⚙ API Keys.');
+    return;
+  }
+  const tl = current();
+  if (!tl) return;
 
-  const apiKey = localStorage.getItem('tf_imgbb');
-  if (!apiKey) { alert('Vui lòng nhập ImgBB API key trong ⚙ Cài đặt.'); return; }
-
-  const tl = current(); if (!tl) return;
-
-  const prog = document.getElementById('uploadProgress');
-  const bar  = document.getElementById('upBar');
-  const lbl  = document.getElementById('upLabel');
-  prog.classList.add('visible');
+  const toast = document.getElementById('uploadToast');
+  const bar   = document.getElementById('toastBar');
+  const lbl   = document.getElementById('toastLabel');
+  toast.classList.add('visible');
+  bar.style.width = '0%';
 
   let done = 0, failed = 0;
-
   for (const file of files) {
-    lbl.textContent = `${done + 1} / ${files.length}: ${file.name}`;
+    lbl.textContent = `${done + 1} / ${files.length} — ${file.name}`;
     try {
       const b64 = await readAsDataURL(file);
       const fd  = new FormData();
       fd.append('image', b64.split(',')[1]);
-      fd.append('name', file.name.replace(/\.[^.]+$/, ''));
-
-      const res  = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, { method: 'POST', body: fd });
+      fd.append('name',  file.name.replace(/\.[^.]+$/, ''));
+      const res  = await fetch(
+        `https://api.imgbb.com/1/upload?key=${session.imgbb}`,
+        { method: 'POST', body: fd }
+      );
       const data = await res.json();
-
       if (data.success) {
         tl.pool.push({
           id:    uid(),
@@ -938,219 +1382,434 @@ document.getElementById('fileInput').addEventListener('change', async function (
           thumb: data.data.thumb?.url ?? data.data.url,
           name:  file.name.replace(/\.[^.]+$/, ''),
         });
+        markDirty();
         renderPool();
       } else {
-        console.error('ImgBB error', data);
+        console.error('ImgBB upload failed:', data);
         failed++;
       }
     } catch (err) {
-      console.error('Upload error', err);
+      console.error('Upload error:', err);
       failed++;
     }
-
     done++;
-    bar.style.width = (done / files.length * 100) + '%';
+    bar.style.width = `${(done / files.length) * 100}%`;
   }
 
-  prog.classList.remove('visible');
+  toast.classList.remove('visible');
   bar.style.width = '0%';
-
-  const msg = failed
-    ? `✓ Upload xong: ${done - failed} thành công, ${failed} thất bại`
-    : `✓ Đã upload ${done} ảnh`;
-  setStatus(msg, 'saved', 3000);
+  setStatus(
+    failed
+      ? `⚠ Upload xong: ${done - failed} thành công, ${failed} thất bại`
+      : `✓ Đã upload ${done} ảnh`,
+    failed ? 'error' : 'saved',
+    3500,
+  );
 });
 
-// ══════════════════════════════════════════════════════
-//  GIST — SAVE / LOAD
-// ══════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════
+   GIST — SAVE / LOAD
+════════════════════════════════════════════════════════ */
 async function saveToGist() {
-  const pat    = localStorage.getItem('tf_pat');
-  const gistId = localStorage.getItem('tf_gist');
-
-  const body = {
+  const { pat, gistId } = session;
+  const payload = {
     description: 'TierForge Data',
     public: false,
     files: { 'tierforge.json': { content: JSON.stringify(state) } },
   };
-
-  const url    = gistId ? `https://api.github.com/gists/${gistId}` : 'https://api.github.com/gists';
+  const url    = gistId
+    ? `https://api.github.com/gists/${gistId}`
+    : 'https://api.github.com/gists';
   const method = gistId ? 'PATCH' : 'POST';
-
   const res = await fetch(url, {
     method,
-    headers: { Authorization: `token ${pat}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    headers: { 'Authorization': `token ${pat}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
   });
   if (!res.ok) throw new Error(`GitHub API: HTTP ${res.status}`);
-
   const data = await res.json();
-  localStorage.setItem('tf_gist', data.id);
+  session.gistId = data.id;
   document.getElementById('inputGistID').value = data.id;
+  // After creating a new data gist, persist its ID
+  if (session.mode === 'owner' && session._password) {
+    try {
+      await saveEncryptedKeys(session.pat, session._password, {
+        pat: session.pat, imgbb: session.imgbb, dataGistId: session.gistId,
+      });
+    } catch (e) { console.warn('Bootstrap update failed:', e.message); }
+  }
+  if (session.mode === 'guest') {
+    localStorage.setItem('tf_guest_gist', data.id);
+  }
 }
 
 async function loadFromGist() {
-  const pat    = localStorage.getItem('tf_pat');
-  const gistId = localStorage.getItem('tf_gist');
+  const { pat, gistId } = session;
   if (!gistId) return false;
-
   const res = await fetch(`https://api.github.com/gists/${gistId}`, {
-    headers: { Authorization: `token ${pat}` },
+    headers: { 'Authorization': `token ${pat}` },
   });
   if (!res.ok) throw new Error(`GitHub API: HTTP ${res.status}`);
-
   const data    = await res.json();
   const content = data.files['tierforge.json']?.content;
-  if (!content) throw new Error('tierforge.json không tìm thấy trong Gist');
-
+  if (!content) throw new Error('tierforge.json không tìm thấy trong Gist.');
   const parsed = JSON.parse(content);
-  // Migrate: ensure all items have an id
+  // Migration: ensure every item has a stable ID
   (parsed.tierlists ?? []).forEach(tl => {
-    tl.pool = (tl.pool ?? []).map(it => ({ id: uid(), ...it }));
+    tl.pool  = (tl.pool  ?? []).map(it => it.id ? it : { id: uid(), ...it });
     (tl.rows ?? []).forEach(r => {
-      r.items = (r.items ?? []).map(it => ({ id: uid(), ...it }));
+      r.items = (r.items ?? []).map(it => it.id ? it : { id: uid(), ...it });
     });
   });
   state = parsed;
-  if (!state.currentId && state.tierlists.length) state.currentId = state.tierlists[0].id;
+  if (!state.currentId && state.tierlists.length > 0) {
+    state.currentId = state.tierlists[0].id;
+  }
   return true;
+}
+
+async function saveAll() {
+  if (!session.pat) { openSetup(); return; }
+  setStatus('<span class="spinner"></span> Đang lưu...', 'saving');
+  // Always keep a local backup
+  localStorage.setItem(`tf_local_${session.mode}`, JSON.stringify(state));
+  try {
+    await saveToGist();
+    isDirty = false;
+    setStatus('✓ Đã lưu lên Gist', 'saved', 2500);
+  } catch (err) {
+    setStatus(`Lỗi lưu: ${err.message}`, 'error');
+  }
 }
 
 document.getElementById('btnSave').addEventListener('click', saveAll);
 
-async function saveAll() {
-  const pat = localStorage.getItem('tf_pat');
-  if (!pat) { openSetup(); return; }
-
-  setStatus('<span class="spinner"></span> Đang lưu...', 'saving');
-  localStorage.setItem('tf_local', JSON.stringify(state)); // local backup
-
-  try {
-    await saveToGist();
-    setStatus('✓ Đã lưu lên Gist', 'saved', 2500);
-  } catch (err) {
-    setStatus('Lỗi khi lưu: ' + err.message, 'error');
+// Warn before tab close if there are unsaved changes
+window.addEventListener('beforeunload', e => {
+  if (isDirty) {
+    e.preventDefault();
+    e.returnValue = '';
   }
-}
+});
 
-// ══════════════════════════════════════════════════════
-//  SETUP MODAL
-// ══════════════════════════════════════════════════════
-document.getElementById('btnSetup').addEventListener('click', openSetup);
-
+/* ════════════════════════════════════════════════════════
+   IN-APP SETUP MODAL (key management post-login)
+════════════════════════════════════════════════════════ */
 function openSetup() {
-  document.getElementById('inputPAT').value    = localStorage.getItem('tf_pat')   ?? '';
-  document.getElementById('inputImgBB').value  = localStorage.getItem('tf_imgbb') ?? '';
-  document.getElementById('inputGistID').value = localStorage.getItem('tf_gist')  ?? '';
+  const isOwner = session.mode === 'owner';
+  document.getElementById('setupModalSub').textContent = isOwner
+    ? 'Owner — thay đổi keys sẽ được mã hóa và cập nhật lên Bootstrap Gist.'
+    : 'Guest — keys được lưu trong localStorage trình duyệt này.';
+  document.getElementById('inputPAT').value    = session.pat    ?? '';
+  document.getElementById('inputImgBB').value  = session.imgbb  ?? '';
+  document.getElementById('inputGistID').value = session.gistId ?? '';
   openModal('setupModal');
 }
 
-document.getElementById('btnSaveSetup').addEventListener('click', () => {
+document.getElementById('btnSetup').addEventListener('click', openSetup);
+
+document.getElementById('btnSaveSetup').addEventListener('click', async () => {
   const pat   = document.getElementById('inputPAT').value.trim();
   const imgbb = document.getElementById('inputImgBB').value.trim();
   const gist  = document.getElementById('inputGistID').value.trim();
-  if (pat)   localStorage.setItem('tf_pat',   pat);
-  if (imgbb) localStorage.setItem('tf_imgbb', imgbb);
-  if (gist)  localStorage.setItem('tf_gist',  gist);
-  else       localStorage.removeItem('tf_gist');
+  if (pat)   session.pat   = pat;
+  if (imgbb) session.imgbb = imgbb;
+  session.gistId = gist || null;
+  if (session.mode === 'guest') {
+    if (pat)   localStorage.setItem('tf_guest_pat',   pat);
+    if (imgbb) localStorage.setItem('tf_guest_imgbb', imgbb);
+    if (gist)  localStorage.setItem('tf_guest_gist',  gist);
+    else       localStorage.removeItem('tf_guest_gist');
+  } else if (session.mode === 'owner' && session._password) {
+    try {
+      await saveEncryptedKeys(session.pat, session._password, {
+        pat: session.pat, imgbb: session.imgbb, dataGistId: session.gistId,
+      });
+    } catch (e) {
+      setStatus('Không thể cập nhật Bootstrap Gist: ' + e.message, 'error');
+    }
+  }
   closeModal('setupModal');
   setStatus('✓ Đã lưu cài đặt', 'saved', 1500);
 });
 
-// ══════════════════════════════════════════════════════
-//  MODAL HELPERS
-// ══════════════════════════════════════════════════════
-function openModal(id)  { document.getElementById(id).classList.remove('hidden'); }
-function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+/* ════════════════════════════════════════════════════════
+   MODAL HELPERS
+════════════════════════════════════════════════════════ */
+function openModal(id)  { document.getElementById(id)?.classList.remove('hidden'); }
+function closeModal(id) { document.getElementById(id)?.classList.add('hidden'); }
 
-// Close on overlay backdrop click
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(overlay.id); });
-});
-
-// ══════════════════════════════════════════════════════
-//  PASSWORD GATE
-// ══════════════════════════════════════════════════════
-async function checkPass() {
-  const val = document.getElementById('gateInput').value;
-  if (!val) return;
-
-  // Special case: if PASS_HASH is still placeholder, let owner set their password
-  if (PASS_HASH === 'REPLACE_WITH_YOUR_HASH') {
-    const h = await sha256(val);
-    document.getElementById('gate-error').textContent =
-      `Chưa đặt mật khẩu. Hash của "${val}" là: ${h} — điền vào PASS_HASH trong code.`;
-    return;
-  }
-
-  const hash = await sha256(val);
-  if (hash === PASS_HASH) {
-    document.getElementById('gate').style.display = 'none';
-    document.getElementById('app').style.display  = 'flex';
-    init();
-  } else {
-    const errEl = document.getElementById('gate-error');
-    errEl.textContent = 'Mật khẩu không đúng.';
-    document.getElementById('gateInput').value = '';
-    setTimeout(() => { errEl.textContent = ''; }, 2000);
-  }
+/* ════════════════════════════════════════════════════════
+   AUTH HELPERS
+════════════════════════════════════════════════════════ */
+function showAuthScreen(id) { document.getElementById(id)?.classList.add('visible'); }
+function hideAuthScreen(id) { document.getElementById(id)?.classList.remove('visible'); }
+function showOwnerStep(id) {
+  // Scope to ownerGate only to avoid collisions
+  document.querySelectorAll('#ownerGate .setup-step').forEach(s => s.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+}
+function setAuthErr(id, msg) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = msg;
 }
 
-document.getElementById('gateBtn').addEventListener('click', checkPass);
-document.getElementById('gateInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') checkPass();
-});
+/* ════════════════════════════════════════════════════════
+   INIT APP  (called after successful auth)
+════════════════════════════════════════════════════════ */
+async function initApp() {
+  document.getElementById('landing').style.display = 'none';
+  hideAuthScreen('ownerGate');
+  hideAuthScreen('guestGate');
+  document.getElementById('app').style.display = 'flex';
 
-// ══════════════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════════════
-async function init() {
-  const pat   = localStorage.getItem('tf_pat');
-  const imgbb = localStorage.getItem('tf_imgbb');
-
-  if (!pat || !imgbb) {
-    openSetup();
-    setStatus('Vui lòng nhập API keys để bắt đầu.', 'error');
-    state = { tierlists: [makeDefaultTierlist()], currentId: null };
-    state.currentId = state.tierlists[0].id;
-    renderAll();
-    return;
-  }
+  const badge = document.getElementById('sessionBadge');
+  badge.className   = `session-badge ${session.mode}`;
+  badge.textContent = session.mode === 'owner' ? '👑 Owner' : '🎯 Guest';
 
   setStatus('<span class="spinner"></span> Đang tải...', 'saving');
-
   try {
     const loaded = await loadFromGist();
-    if (!loaded) {
-      state = { tierlists: [makeDefaultTierlist()], currentId: null };
-      state.currentId = state.tierlists[0].id;
-    }
+    if (!loaded) state = freshState();
+    isDirty = false;
     setStatus('✓ Đã tải xong', 'saved', 2000);
   } catch (err) {
+    console.warn('Gist load failed:', err.message);
     setStatus('Không tải được Gist — dùng bản cục bộ.', 'error', 4000);
-    const local = localStorage.getItem('tf_local');
-    if (local) {
-      try { state = JSON.parse(local); }
-      catch { state = { tierlists: [makeDefaultTierlist()], currentId: null }; }
-    } else {
-      state = { tierlists: [makeDefaultTierlist()], currentId: null };
+    try {
+      const raw = localStorage.getItem(`tf_local_${session.mode}`);
+      state = raw ? JSON.parse(raw) : freshState();
+    } catch {
+      state = freshState();
     }
-    if (!state.tierlists.length) state.tierlists.push(makeDefaultTierlist());
+    if (!state.tierlists?.length) state = freshState();
     if (!state.currentId) state.currentId = state.tierlists[0].id;
+    isDirty = false;
   }
-
   document.getElementById('displayMode').value = current()?.displayMode ?? 'square';
   renderAll();
 }
 
-// ══════════════════════════════════════════════════════
-//  CONSOLE HELPERS
-// ══════════════════════════════════════════════════════
-window._genHash = async pass => {
-  const h = await sha256(pass);
-  console.log(`%cHash cho "${pass}":`, 'color:#6c63ff;font-weight:bold');
-  console.log(`%c${h}`, 'color:#4caf50;font-size:1.1em');
-  console.log('%cĐiền giá trị này vào PASS_HASH trong code.', 'color:#9090a0');
+/* ════════════════════════════════════════════════════════
+   LOGOUT
+════════════════════════════════════════════════════════ */
+document.getElementById('btnLogout').addEventListener('click', async () => {
+  if (isDirty) {
+    const choice = confirm('Có thay đổi chưa được lưu.\nNhấn OK để lưu trước khi đăng xuất, Cancel để đăng xuất ngay.');
+    if (choice) {
+      await saveAll();
+    }
+  }
+  // Clear session
+  Object.assign(session, { mode:null, pat:null, imgbb:null, gistId:null, _password:null });
+  state  = freshState();
+  isDirty = false;
+  document.getElementById('app').style.display      = 'none';
+  document.getElementById('landing').style.display  = 'flex';
+});
+
+/* ════════════════════════════════════════════════════════
+   LANDING — MODE SELECT
+════════════════════════════════════════════════════════ */
+document.getElementById('btnModeOwner').addEventListener('click', () => {
+  document.getElementById('landing').style.display = 'none';
+  showAuthScreen('ownerGate');
+  // First-time setup vs returning login
+  const isFirstTime = BOOTSTRAP_GIST_ID === 'REPLACE_WITH_BOOTSTRAP_GIST_ID';
+  showOwnerStep(isFirstTime ? 'ownerStep1' : 'ownerStep0');
+});
+
+document.getElementById('btnModeGuest').addEventListener('click', () => {
+  document.getElementById('landing').style.display = 'none';
+  showAuthScreen('guestGate');
+  // Pre-fill from localStorage
+  document.getElementById('guestPAT').value    = localStorage.getItem('tf_guest_pat')   ?? '';
+  document.getElementById('guestImgBB').value  = localStorage.getItem('tf_guest_imgbb') ?? '';
+  document.getElementById('guestGistId').value = localStorage.getItem('tf_guest_gist')  ?? '';
+});
+
+/* ════════════════════════════════════════════════════════
+   BACK TO LANDING
+════════════════════════════════════════════════════════ */
+function goToLanding() {
+  hideAuthScreen('ownerGate');
+  hideAuthScreen('guestGate');
+  document.getElementById('landing').style.display = 'flex';
+}
+document.getElementById('btnOwnerBack').addEventListener('click',  goToLanding);
+document.getElementById('btnSetupBack1').addEventListener('click', goToLanding);
+document.getElementById('btnGuestBack').addEventListener('click',  goToLanding);
+
+/* ════════════════════════════════════════════════════════
+   OWNER FLOW — Step 0: login (returning user)
+════════════════════════════════════════════════════════ */
+async function ownerLogin() {
+  const pass  = document.getElementById('ownerPassInput').value.trim();
+  const btn   = document.getElementById('btnOwnerLogin');
+  setAuthErr('ownerLoginError', '');
+  if (!pass) return;
+  btn.textContent = 'Đang giải mã...';
+  btn.disabled    = true;
+  try {
+    const keys = await loadAndDecryptKeys(pass);
+    session.mode      = 'owner';
+    session.pat       = keys.pat;
+    session.imgbb     = keys.imgbb;
+    session.gistId    = keys.dataGistId ?? null;
+    session._password = pass;
+    document.getElementById('ownerPassInput').value = '';
+    await initApp();
+  } catch (err) {
+    setAuthErr('ownerLoginError', err.message);
+  } finally {
+    btn.textContent = 'Đăng nhập →';
+    btn.disabled    = false;
+  }
+}
+document.getElementById('btnOwnerLogin').addEventListener('click', ownerLogin);
+document.getElementById('ownerPassInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') ownerLogin();
+});
+
+/* ════════════════════════════════════════════════════════
+   OWNER FLOW — Step 1: set password (first-time)
+════════════════════════════════════════════════════════ */
+let _tmpPass = null;
+
+function ownerSetupPass() {
+  const p1 = document.getElementById('setupPass1').value;
+  const p2 = document.getElementById('setupPass2').value;
+  setAuthErr('setupPassError', '');
+  if (!p1)         { setAuthErr('setupPassError', 'Vui lòng nhập mật khẩu.'); return; }
+  if (p1.length < 6) { setAuthErr('setupPassError', 'Mật khẩu tối thiểu 6 ký tự.'); return; }
+  if (p1 !== p2)   { setAuthErr('setupPassError', 'Mật khẩu không khớp.'); return; }
+  _tmpPass = p1;
+  document.getElementById('setupPass1').value = '';
+  document.getElementById('setupPass2').value = '';
+  showOwnerStep('ownerStep2');
+}
+document.getElementById('btnSetupPass').addEventListener('click', ownerSetupPass);
+document.getElementById('setupPass1').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('setupPass2').focus();
+});
+document.getElementById('setupPass2').addEventListener('keydown', e => {
+  if (e.key === 'Enter') ownerSetupPass();
+});
+
+/* ════════════════════════════════════════════════════════
+   OWNER FLOW — Step 2: enter API keys
+════════════════════════════════════════════════════════ */
+function ownerSetupKeys() {
+  const pat   = document.getElementById('setupPAT').value.trim();
+  const imgbb = document.getElementById('setupImgBB').value.trim();
+  setAuthErr('setupKeysError', '');
+  if (!pat)   { setAuthErr('setupKeysError', 'Vui lòng nhập GitHub PAT.'); return; }
+  if (!imgbb) { setAuthErr('setupKeysError', 'Vui lòng nhập ImgBB API key.'); return; }
+  session.pat    = pat;
+  session.imgbb  = imgbb;
+  session.gistId = document.getElementById('setupDataGist').value.trim() || null;
+  showOwnerStep('ownerStep3');
+}
+document.getElementById('btnSetupKeys').addEventListener('click', ownerSetupKeys);
+document.getElementById('setupPAT').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('setupImgBB').focus();
+});
+document.getElementById('setupImgBB').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('setupDataGist').focus();
+});
+document.getElementById('setupDataGist').addEventListener('keydown', e => {
+  if (e.key === 'Enter') ownerSetupKeys();
+});
+
+/* ════════════════════════════════════════════════════════
+   OWNER FLOW — Step 3: bootstrap Gist + finish
+════════════════════════════════════════════════════════ */
+async function ownerSetupFinish() {
+  const bootstrapId = document.getElementById('setupBootstrapGist').value.trim();
+  const btn         = document.getElementById('btnSetupFinish');
+  setAuthErr('setupFinishError', '');
+  if (!bootstrapId) {
+    setAuthErr('setupFinishError', 'Vui lòng nhập Bootstrap Gist ID.');
+    return;
+  }
+  if (BOOTSTRAP_GIST_ID === 'REPLACE_WITH_BOOTSTRAP_GIST_ID') {
+    setAuthErr('setupFinishError',
+      `⚠ Bạn cần hardcode ID này vào BOOTSTRAP_GIST_ID trong index.html trước rồi re-deploy: "${bootstrapId}"`);
+    return;
+  }
+  btn.textContent = 'Đang mã hóa...';
+  btn.disabled    = true;
+  try {
+    session.mode      = 'owner';
+    session._password = _tmpPass;
+    await saveEncryptedKeys(session.pat, _tmpPass, {
+      pat: session.pat, imgbb: session.imgbb, dataGistId: session.gistId,
+    });
+    _tmpPass = null;
+    await initApp();
+  } catch (err) {
+    setAuthErr('setupFinishError', 'Lỗi: ' + err.message);
+    btn.textContent = 'Mã hóa & Lưu →';
+    btn.disabled    = false;
+  }
+}
+document.getElementById('btnSetupFinish').addEventListener('click', ownerSetupFinish);
+document.getElementById('setupBootstrapGist').addEventListener('keydown', e => {
+  if (e.key === 'Enter') ownerSetupFinish();
+});
+
+/* ════════════════════════════════════════════════════════
+   GUEST FLOW
+════════════════════════════════════════════════════════ */
+async function guestStart() {
+  const pat    = document.getElementById('guestPAT').value.trim();
+  const imgbb  = document.getElementById('guestImgBB').value.trim();
+  const gistId = document.getElementById('guestGistId').value.trim();
+  setAuthErr('guestError', '');
+  if (!pat)   { setAuthErr('guestError', 'Vui lòng nhập GitHub PAT.'); return; }
+  if (!imgbb) { setAuthErr('guestError', 'Vui lòng nhập ImgBB API key.'); return; }
+  // Persist for convenience on next visit
+  localStorage.setItem('tf_guest_pat',   pat);
+  localStorage.setItem('tf_guest_imgbb', imgbb);
+  if (gistId) localStorage.setItem('tf_guest_gist',  gistId);
+  else        localStorage.removeItem('tf_guest_gist');
+  session.mode   = 'guest';
+  session.pat    = pat;
+  session.imgbb  = imgbb;
+  session.gistId = gistId || null;
+  await initApp();
+}
+document.getElementById('btnGuestStart').addEventListener('click', guestStart);
+document.getElementById('guestPAT').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('guestImgBB').focus();
+});
+document.getElementById('guestImgBB').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('guestGistId').focus();
+});
+document.getElementById('guestGistId').addEventListener('keydown', e => {
+  if (e.key === 'Enter') guestStart();
+});
+
+/* ════════════════════════════════════════════════════════
+   CONSOLE HELPERS
+════════════════════════════════════════════════════════ */
+window._session = () => ({
+  mode:     session.mode,
+  gistId:   session.gistId,
+  hasPAT:   !!session.pat,
+  hasImgBB: !!session.imgbb,
+  isDirty,
+});
+
+window._testDecrypt = async pass => {
+  try {
+    const k = await loadAndDecryptKeys(pass);
+    console.log('%c✓ Giải mã thành công', 'color:#4caf50;font-weight:bold');
+    console.log('PAT prefix:', k.pat?.slice(0, 10) + '...');
+    console.log('dataGistId:', k.dataGistId ?? '(chưa có)');
+  } catch (e) {
+    console.error('✗', e.message);
+  }
 };
 </script>
 </body>
