@@ -567,6 +567,9 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
       <button class="auth-btn" id="btnOwnerLogin">Đăng nhập →</button>
       <div class="auth-error" id="ownerLoginError"></div>
       <button class="auth-back" id="btnOwnerBack">← Quay lại</button>
+      <button class="auth-back" id="btnGoSetup" style="margin-top:6px;opacity:.5">
+        Lần đầu setup? →
+      </button>
     </div>
 
     <!-- Step 1: first-time — set password -->
@@ -1639,6 +1642,7 @@ function goToLanding() {
 document.getElementById('btnOwnerBack').addEventListener('click',  goToLanding);
 document.getElementById('btnSetupBack1').addEventListener('click', goToLanding);
 document.getElementById('btnGuestBack').addEventListener('click',  goToLanding);
+document.getElementById('btnGoSetup').addEventListener('click', () => showOwnerStep('ownerStep1'));
 
 /* ════════════════════════════════════════════════════════
    OWNER FLOW — Step 0: login (returning user)
