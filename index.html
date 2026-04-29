@@ -257,6 +257,8 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
 .tier-row {
   display: grid;
   grid-template-columns: var(--label-w) 1fr auto;
+  grid-auto-rows: auto;
+  align-items: stretch;
   border-bottom: 1px solid var(--border);
 }
 .tier-row:last-child { border-bottom: none; }
@@ -269,7 +271,7 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
 }
 
 .tier-items {
-  display: flex; flex-wrap: wrap; align-content: flex-start;
+  display: flex; flex-wrap: wrap; align-content: flex-start; align-items: flex-start;
   gap: var(--img-gap); padding: var(--img-pad);
   min-height: var(--row-min-h);
   background: var(--bg2); transition: background .15s;
