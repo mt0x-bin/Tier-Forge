@@ -6,30 +6,27 @@
 <title>TierForge</title>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* ════════════════════════════════════════════════
-   DESIGN TOKENS
-════════════════════════════════════════════════ */
+/* ── TOKENS ─────────────────────────────────────── */
 :root {
-  --bg:       #0e0e10;
-  --bg2:      #18181b;
-  --bg3:      #222226;
-  --border:   #2e2e35;
-  --text:     #e8e8f0;
-  --text2:    #9090a0;
-  --accent:   #6c63ff;
-  --danger:   #e05252;
-  --green:    #4caf50;
-  --gold:     #f5a623;
-  --radius:   6px;
-  --label-w:  110px;
-  --img-h:    80px;
-  --img-pad:  5px;
-  --img-gap:  4px;
+  --bg:      #0e0e10;
+  --bg2:     #18181b;
+  --bg3:     #222226;
+  --border:  #2e2e35;
+  --text:    #e8e8f0;
+  --text2:   #9090a0;
+  --accent:  #6c63ff;
+  --danger:  #e05252;
+  --green:   #4caf50;
+  --gold:    #f5a623;
+  --radius:  6px;
+  --label-w: 110px;
+  --img-h:   80px;
+  --img-pad: 5px;
+  --img-gap: 4px;
+  --row-min-h: calc(var(--img-pad) * 2 + var(--img-h));
 }
 
-/* ════════════════════════════════════════════════
-   RESET & BASE
-════════════════════════════════════════════════ */
+/* ── RESET ───────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   background: var(--bg);
@@ -39,9 +36,36 @@ body {
   line-height: 1.5;
 }
 
-/* ════════════════════════════════════════════════
-   LANDING — mode select
-════════════════════════════════════════════════ */
+/* ── SHARED FORM CONTROLS ───────────────────────── */
+/* Used in both auth screens and modals */
+.field-input {
+  width: 100%;
+  padding: 10px 13px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  margin-bottom: 16px;
+  transition: border-color .2s;
+}
+.field-input:focus  { border-color: var(--accent); }
+.field-input.pass   { text-align: center; letter-spacing: 4px; font-size: 1rem; margin-bottom: 12px; }
+
+.field-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+.field-label-hint { text-transform: none; letter-spacing: 0; font-weight: 400; opacity: .5; }
+
+/* ── LANDING ─────────────────────────────────────── */
 #landing {
   position: fixed; inset: 0;
   background: var(--bg);
@@ -56,12 +80,9 @@ body {
   width: 400px;
   text-align: center;
 }
-.landing-box h1 {
-  font-weight: 800; font-size: 3rem; letter-spacing: 1px;
-  margin-bottom: 6px;
-}
-.landing-tagline { color: var(--text2); font-size: 0.85rem; margin-bottom: 36px; }
-.mode-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.landing-box h1   { font-weight: 800; font-size: 3rem; letter-spacing: 1px; margin-bottom: 6px; }
+.landing-tagline  { color: var(--text2); font-size: 0.85rem; margin-bottom: 36px; }
+.mode-btns        { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .mode-card {
   background: var(--bg3);
   border: 1px solid var(--border);
@@ -70,15 +91,13 @@ body {
   cursor: pointer;
   transition: border-color .2s, background .2s;
 }
-.mode-card:hover        { border-color: var(--accent); background: rgba(108,99,255,.07); }
-.mode-card.owner:hover  { border-color: var(--gold);   background: rgba(245,166,35,.07); }
+.mode-card:hover       { border-color: var(--accent); background: rgba(108,99,255,.07); }
+.mode-card.owner:hover { border-color: var(--gold);   background: rgba(245,166,35,.07); }
 .mode-icon  { font-size: 1.9rem; margin-bottom: 8px; }
 .mode-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
 .mode-desc  { color: var(--text2); font-size: 0.75rem; line-height: 1.45; }
 
-/* ════════════════════════════════════════════════
-   AUTH SCREENS  (owner + guest)
-════════════════════════════════════════════════ */
+/* ── AUTH SCREENS ───────────────────────────────── */
 .auth-screen {
   position: fixed; inset: 0;
   background: var(--bg);
@@ -99,46 +118,6 @@ body {
 }
 .auth-box h2 { font-weight: 800; font-size: 1.75rem; margin-bottom: 5px; }
 .auth-sub    { color: var(--text2); font-size: 0.82rem; margin-bottom: 26px; }
-
-/* Shared form elements inside auth screens */
-.auth-input {
-  width: 100%;
-  padding: 10px 13px;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--text);
-  font-family: inherit;
-  font-size: 0.9rem;
-  outline: none;
-  margin-bottom: 16px;
-  transition: border-color .2s;
-}
-.auth-input:focus { border-color: var(--accent); }
-
-/* Password field: centred + spaced dots */
-.auth-input.pass {
-  text-align: center;
-  letter-spacing: 4px;
-  font-size: 1rem;
-  margin-bottom: 12px;
-}
-
-.auth-label {
-  display: block;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text2);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 5px;
-}
-.auth-label-hint {
-  text-transform: none;
-  letter-spacing: 0;
-  font-weight: 400;
-  opacity: .5;
-}
 
 .auth-btn {
   width: 100%;
@@ -178,11 +157,7 @@ body {
   word-break: break-all;
 }
 
-/* Step indicator */
-.step-indicator {
-  display: flex; gap: 6px; justify-content: center;
-  margin-bottom: 22px;
-}
+.step-indicator { display: flex; gap: 6px; justify-content: center; margin-bottom: 22px; }
 .step-dot {
   width: 8px; height: 8px;
   border-radius: 50%;
@@ -192,11 +167,9 @@ body {
 .step-dot.active { background: var(--accent); }
 .step-dot.done   { background: var(--green); }
 
-/* Multi-step panels */
 .setup-step        { display: none; }
 .setup-step.active { display: block; }
 
-/* Info callout box */
 .info-box {
   background: var(--bg3);
   border: 1px solid var(--border);
@@ -217,32 +190,19 @@ body {
   word-break: break-all;
 }
 
-/* ════════════════════════════════════════════════
-   SESSION BADGE
-════════════════════════════════════════════════ */
+/* ── SESSION BADGE ───────────────────────────────── */
 .session-badge {
   display: inline-flex; align-items: center; gap: 5px;
   padding: 3px 10px;
   border-radius: 20px;
   font-size: 0.72rem; font-weight: 600;
 }
-.session-badge.owner {
-  background: rgba(245,166,35,.13); color: var(--gold);
-  border: 1px solid rgba(245,166,35,.28);
-}
-.session-badge.guest {
-  background: rgba(108,99,255,.13); color: var(--accent);
-  border: 1px solid rgba(108,99,255,.28);
-}
+.session-badge.owner { background: rgba(245,166,35,.13); color: var(--gold);   border: 1px solid rgba(245,166,35,.28); }
+.session-badge.guest { background: rgba(108,99,255,.13); color: var(--accent); border: 1px solid rgba(108,99,255,.28); }
 
-/* ════════════════════════════════════════════════
-   APP SHELL
-════════════════════════════════════════════════ */
+/* ── APP SHELL ───────────────────────────────────── */
 #app { display: none; flex-direction: column; min-height: 100vh; }
 
-/* ════════════════════════════════════════════════
-   HEADER
-════════════════════════════════════════════════ */
 header {
   display: flex; align-items: center; gap: 12px;
   padding: 12px 24px;
@@ -253,21 +213,25 @@ header {
 .header-logo { font-weight: 800; font-size: 1.8rem; letter-spacing: 0.5px; flex-shrink: 0; }
 .header-sep  { flex: 1; }
 .tl-selector { display: flex; align-items: center; gap: 8px; }
-.tl-selector select {
+
+/* ── SHARED SELECT STYLE ─────────────────────────── */
+select {
   background: var(--bg3);
   border: 1px solid var(--border);
   color: var(--text);
   padding: 7px 12px;
   border-radius: var(--radius);
-  font-family: inherit; font-size: 0.88rem;
-  outline: none; min-width: 160px;
-  cursor: pointer; transition: border-color .15s;
+  font-family: inherit;
+  font-size: 0.88rem;
+  outline: none;
+  cursor: pointer;
+  transition: border-color .15s;
 }
-.tl-selector select:focus { border-color: var(--accent); }
+select:focus { border-color: var(--accent); }
+.tl-selector select { min-width: 160px; }
+.toolbar select     { font-size: 0.85rem; }
 
-/* ════════════════════════════════════════════════
-   BUTTONS
-════════════════════════════════════════════════ */
+/* ── BUTTONS ─────────────────────────────────────── */
 .btn {
   padding: 8px 18px;
   border-radius: var(--radius);
@@ -281,25 +245,15 @@ header {
 .btn-primary   { background: var(--accent); color: #fff;         border-color: var(--accent); }
 .btn-secondary { background: var(--bg3);    color: var(--text2); border-color: var(--border); }
 .btn-danger    { background: var(--danger); color: #fff;         border-color: var(--danger); }
-.btn-sm { padding: 6px 13px; font-size: 0.8rem; }
+.btn-sm        { padding: 6px 13px; font-size: 0.8rem; }
 
-/* ════════════════════════════════════════════════
-   MAIN
-════════════════════════════════════════════════ */
+/* ── MAIN ────────────────────────────────────────── */
 main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px; }
 
-/* ════════════════════════════════════════════════
-   TIERLIST WRAPPER
-════════════════════════════════════════════════ */
-.tierlist-wrap { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-.tierlist-empty {
-  padding: 32px; text-align: center;
-  color: var(--text2); font-size: 0.9rem;
-}
+/* ── TIERLIST ────────────────────────────────────── */
+.tierlist-wrap  { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.tierlist-empty { padding: 32px; text-align: center; color: var(--text2); font-size: 0.9rem; }
 
-/* ════════════════════════════════════════════════
-   TIER ROW  (CSS Grid — label stretches full height)
-════════════════════════════════════════════════ */
 .tier-row {
   display: grid;
   grid-template-columns: var(--label-w) 1fr auto;
@@ -311,12 +265,13 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
   display: flex; align-items: center; justify-content: center;
   font-weight: 800; font-size: 1.6rem; letter-spacing: 0.5px;
   user-select: none;
-  min-height: calc(var(--img-pad) * 2 + var(--img-h));
+  min-height: var(--row-min-h);
 }
 
 .tier-items {
   display: flex; flex-wrap: wrap; align-content: flex-start;
   gap: var(--img-gap); padding: var(--img-pad);
+  min-height: var(--row-min-h);
   background: var(--bg2); transition: background .15s;
 }
 .tier-items.drag-over {
@@ -341,9 +296,7 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
 }
 .ctrl-btn:hover { border-color: var(--accent); color: var(--text); }
 
-/* ════════════════════════════════════════════════
-   ITEM CARD  (outline not border — no layout shift)
-════════════════════════════════════════════════ */
+/* ── ITEM CARD ───────────────────────────────────── */
 .item-card {
   position: relative; cursor: grab;
   border-radius: 4px; overflow: hidden;
@@ -353,7 +306,11 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
 }
 .item-card:hover    { outline-color: var(--accent); transform: scale(1.05); z-index: 2; }
 .item-card.dragging { opacity: .3; cursor: grabbing; }
-.item-card img { display: block; object-fit: cover; }
+.item-card img      { display: block; object-fit: cover; }
+
+/* Drop position indicators */
+.item-card.drop-before { outline-color: var(--accent); box-shadow: -3px 0 0 var(--accent); }
+.item-card.drop-after  { outline-color: var(--accent); box-shadow:  3px 0 0 var(--accent); }
 
 .item-remove {
   position: absolute; top: 3px; right: 3px;
@@ -366,9 +323,7 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
 .item-remove:hover { background: var(--danger); }
 .item-card:hover .item-remove { display: flex; }
 
-/* ════════════════════════════════════════════════
-   IMAGE DISPLAY MODES
-════════════════════════════════════════════════ */
+/* ── DISPLAY MODES ───────────────────────────────── */
 .mode-square    .item-card img { width: var(--img-h);              height: var(--img-h); }
 .mode-landscape .item-card img { width: calc(var(--img-h) * 1.5);  height: var(--img-h); }
 .mode-portrait  .item-card img { width: calc(var(--img-h) * 0.75); height: var(--img-h); }
@@ -377,13 +332,11 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
 .mode-round     .item-card img { width: var(--img-h); height: var(--img-h); }
 .mode-nocrop    .item-card img { width: auto; height: var(--img-h); object-fit: contain; background: var(--bg3); }
 
-/* ════════════════════════════════════════════════
-   UNRANKED POOL
-════════════════════════════════════════════════ */
-.pool-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+/* ── POOL ────────────────────────────────────────── */
+.pool-header    { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .pool-header h3 { font-weight: 800; font-size: 1.1rem; letter-spacing: 0.5px; color: var(--text2); }
 .pool-items {
-  min-height: calc(var(--img-pad) * 2 + var(--img-h));
+  min-height: var(--row-min-h);
   display: flex; flex-wrap: wrap; gap: var(--img-gap); padding: var(--img-pad);
   background: var(--bg2); border: 1px solid var(--border);
   border-radius: 8px; transition: background .15s;
@@ -398,22 +351,13 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
   width: 100%; pointer-events: none; padding: 12px 0;
 }
 
-/* ════════════════════════════════════════════════
-   TOOLBAR
-════════════════════════════════════════════════ */
+/* ── TOOLBAR ─────────────────────────────────────── */
 .toolbar {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
   padding: 12px 24px;
   background: var(--bg2); border-top: 1px solid var(--border);
   position: sticky; bottom: 0; z-index: 50;
 }
-.toolbar select {
-  background: var(--bg3); border: 1px solid var(--border);
-  color: var(--text); padding: 7px 12px;
-  border-radius: var(--radius); font-family: inherit; font-size: 0.85rem;
-  outline: none; cursor: pointer; transition: border-color .15s;
-}
-.toolbar select:focus { border-color: var(--accent); }
 .upload-label {
   padding: 7px 16px; background: var(--bg3);
   border: 1px solid var(--border); border-radius: var(--radius);
@@ -422,21 +366,15 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
   transition: border-color .15s, color .15s;
 }
 .upload-label:hover { border-color: var(--accent); color: var(--accent); }
-#fileInput { display: none; }
+#fileInput   { display: none; }
 .toolbar-sep { flex: 1; }
 
-/* Save status */
-#saveStatus {
-  font-size: 0.78rem; color: var(--text2);
-  display: flex; align-items: center; gap: 5px;
-}
+#saveStatus { font-size: 0.78rem; color: var(--text2); display: flex; align-items: center; gap: 5px; }
 #saveStatus.saving { color: var(--accent); }
 #saveStatus.saved  { color: var(--green); }
 #saveStatus.error  { color: var(--danger); }
 
-/* ════════════════════════════════════════════════
-   MODALS
-════════════════════════════════════════════════ */
+/* ── MODALS ──────────────────────────────────────── */
 .modal-overlay {
   position: fixed; inset: 0;
   background: rgba(0,0,0,.72);
@@ -450,22 +388,10 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
   width: 460px; max-width: 100%;
   position: relative; max-height: 90vh; overflow-y: auto;
 }
-.modal h2 { font-weight: 800; font-size: 1.5rem; letter-spacing: 0.5px; margin-bottom: 4px; }
-.modal .sub { color: var(--text2); font-size: 0.82rem; margin-bottom: 22px; }
-.modal label {
-  display: block; font-size: 0.78rem; font-weight: 600;
-  color: var(--text2); text-transform: uppercase; letter-spacing: 1px;
-  margin-bottom: 5px;
-}
-.modal-input {
-  width: 100%; padding: 10px 13px;
-  background: var(--bg3); border: 1px solid var(--border);
-  border-radius: var(--radius); color: var(--text);
-  font-family: inherit; font-size: 0.9rem; outline: none;
-  margin-bottom: 16px; transition: border-color .2s;
-}
-.modal-input:focus { border-color: var(--accent); }
-.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+.modal h2           { font-weight: 800; font-size: 1.5rem; letter-spacing: 0.5px; margin-bottom: 4px; }
+.modal .sub         { color: var(--text2); font-size: 0.82rem; margin-bottom: 22px; }
+.modal .field-label { margin-bottom: 5px; }
+.modal-actions      { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
 .close-btn {
   position: absolute; top: 14px; right: 16px;
   background: none; border: none; color: var(--text2);
@@ -474,9 +400,7 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
 }
 .close-btn:hover { color: var(--text); }
 
-/* ════════════════════════════════════════════════
-   ROW EDITOR
-════════════════════════════════════════════════ */
+/* ── ROW EDITOR ──────────────────────────────────── */
 .color-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
 .color-swatch {
   width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
@@ -487,9 +411,7 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
 .color-swatch.active { outline-color: #fff; transform: scale(1.15); }
 .row-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
 
-/* ════════════════════════════════════════════════
-   TIERLIST MANAGER
-════════════════════════════════════════════════ */
+/* ── TIERLIST MANAGER ────────────────────────────── */
 .tl-list-item {
   display: flex; align-items: center; gap: 10px;
   padding: 10px 14px;
@@ -500,9 +422,7 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
 .tl-list-date { color: var(--text2); font-size: 0.75rem; white-space: nowrap; }
 .tl-create-row { display: flex; gap: 8px; margin-top: 16px; }
 
-/* ════════════════════════════════════════════════
-   MISC
-════════════════════════════════════════════════ */
+/* ── MISC ────────────────────────────────────────── */
 .tag {
   display: inline-block; padding: 2px 9px;
   background: var(--bg3); border: 1px solid var(--border);
@@ -515,9 +435,7 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ════════════════════════════════════════════════
-   UPLOAD PROGRESS TOAST
-════════════════════════════════════════════════ */
+/* ── UPLOAD TOAST ────────────────────────────────── */
 .upload-toast {
   position: fixed; bottom: 72px; right: 24px;
   background: var(--bg2); border: 1px solid var(--border);
@@ -534,7 +452,7 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
 </head>
 <body>
 
-<!-- ════════ LANDING ════════ -->
+<!-- LANDING -->
 <div id="landing">
   <div class="landing-box">
     <h1>TierForge</h1>
@@ -554,86 +472,67 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
   </div>
 </div>
 
-<!-- ════════ OWNER AUTH ════════ -->
+<!-- OWNER AUTH -->
 <div class="auth-screen" id="ownerGate">
   <div class="auth-box">
 
-    <!-- Step 0: returning user — enter password -->
+    <!-- Step 0: returning user -->
     <div class="setup-step active" id="ownerStep0">
       <h2>👑 Owner</h2>
       <p class="auth-sub">Nhập mật khẩu để giải mã API keys và đăng nhập</p>
-      <input class="auth-input pass" type="password" id="ownerPassInput"
+      <input class="field-input pass" type="password" id="ownerPassInput"
         placeholder="••••••••" autocomplete="current-password">
       <button class="auth-btn" id="btnOwnerLogin">Đăng nhập →</button>
       <div class="auth-error" id="ownerLoginError"></div>
       <button class="auth-back" id="btnOwnerBack">← Quay lại</button>
-      <button class="auth-back" id="btnGoSetup" style="margin-top:6px;opacity:.5">
-        Lần đầu setup? →
-      </button>
+      <button class="auth-back" id="btnGoSetup" style="margin-top:6px;opacity:.5">Lần đầu setup? →</button>
     </div>
 
-    <!-- Step 1: first-time — set password -->
+    <!-- Step 1: set password -->
     <div class="setup-step" id="ownerStep1">
       <div class="step-indicator">
-        <div class="step-dot active"></div>
-        <div class="step-dot"></div>
-        <div class="step-dot"></div>
+        <div class="step-dot active"></div><div class="step-dot"></div><div class="step-dot"></div>
       </div>
       <h2>Tạo mật khẩu</h2>
       <p class="auth-sub">Mật khẩu mã hóa API keys. Không thể khôi phục nếu quên.</p>
-      <input class="auth-input pass" type="password" id="setupPass1" placeholder="Mật khẩu mới">
-      <input class="auth-input pass" type="password" id="setupPass2" placeholder="Nhập lại mật khẩu" style="margin-top:4px">
+      <input class="field-input pass" type="password" id="setupPass1" placeholder="Mật khẩu mới">
+      <input class="field-input pass" type="password" id="setupPass2" placeholder="Nhập lại mật khẩu" style="margin-top:4px">
       <button class="auth-btn" id="btnSetupPass">Tiếp tục →</button>
       <div class="auth-error" id="setupPassError"></div>
       <button class="auth-back" id="btnSetupBack1">← Quay lại</button>
     </div>
 
-    <!-- Step 2: enter API keys -->
+    <!-- Step 2: API keys -->
     <div class="setup-step" id="ownerStep2">
       <div class="step-indicator">
-        <div class="step-dot done"></div>
-        <div class="step-dot active"></div>
-        <div class="step-dot"></div>
+        <div class="step-dot done"></div><div class="step-dot active"></div><div class="step-dot"></div>
       </div>
       <h2>API Keys</h2>
       <p class="auth-sub">Keys sẽ được mã hóa AES-256 trước khi lưu.</p>
-      <label class="auth-label" for="setupPAT">
-        GitHub PAT <span class="auth-label-hint">(scope: gist)</span>
-      </label>
-      <input class="auth-input" type="password" id="setupPAT"
-        placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
-      <label class="auth-label" for="setupImgBB">ImgBB API Key</label>
-      <input class="auth-input" type="password" id="setupImgBB"
-        placeholder="xxxxxxxxxxxxxxxx" autocomplete="off">
-      <label class="auth-label" for="setupDataGist">
-        Data Gist ID <span class="auth-label-hint">(để trống → tự tạo)</span>
-      </label>
-      <input class="auth-input" type="text" id="setupDataGist"
-        placeholder="Tự động tạo khi lưu lần đầu">
+      <label class="field-label" for="setupPAT">GitHub PAT <span class="field-label-hint">(scope: gist)</span></label>
+      <input class="field-input" type="password" id="setupPAT" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+      <label class="field-label" for="setupImgBB">ImgBB API Key</label>
+      <input class="field-input" type="password" id="setupImgBB" placeholder="xxxxxxxxxxxxxxxx" autocomplete="off">
+      <label class="field-label" for="setupDataGist">Data Gist ID <span class="field-label-hint">(để trống → tự tạo)</span></label>
+      <input class="field-input" type="text" id="setupDataGist" placeholder="Tự động tạo khi lưu lần đầu">
       <button class="auth-btn" id="btnSetupKeys">Tiếp tục →</button>
       <div class="auth-error" id="setupKeysError"></div>
     </div>
 
-    <!-- Step 3: bootstrap Gist ID -->
+    <!-- Step 3: bootstrap Gist -->
     <div class="setup-step" id="ownerStep3">
       <div class="step-indicator">
-        <div class="step-dot done"></div>
-        <div class="step-dot done"></div>
-        <div class="step-dot active"></div>
+        <div class="step-dot done"></div><div class="step-dot done"></div><div class="step-dot active"></div>
       </div>
       <h2>Bootstrap Gist</h2>
       <p class="auth-sub">Gist công khai lưu keys đã mã hóa, dùng để đăng nhập từ mọi thiết bị.</p>
       <div class="info-box">
-        1. Vào <a href="https://gist.github.com" target="_blank">gist.github.com</a>
-           → tạo Gist mới (nội dung bất kỳ)<br>
-        2. Copy ID trong URL:
-           <code>gist.github.com/user/<strong>ID_Ở_ĐÂY</strong></code><br>
-        3. Dán vào ô dưới → Lưu → sau đó hardcode vào
-           <code>BOOTSTRAP_GIST_ID</code> trong <code>index.html</code> và re-deploy
+        1. Vào <a href="https://gist.github.com" target="_blank">gist.github.com</a> → tạo Gist mới (nội dung bất kỳ)<br>
+        2. Copy ID trong URL: <code>gist.github.com/user/<strong>ID_Ở_ĐÂY</strong></code><br>
+        3. Dán vào ô dưới → Lưu → sau đó hardcode vào <code>BOOTSTRAP_GIST_ID</code> trong <code>index.html</code> và re-deploy
       </div>
-      <label class="auth-label" for="setupBootstrapGist">Bootstrap Gist ID</label>
-      <input class="auth-input" type="text" id="setupBootstrapGist"
-        placeholder="4a8b2c1d3e5f6a7b8c9d">
+      <label class="field-label" for="setupBootstrapGist">Bootstrap Gist ID</label>
+      <input class="field-input" type="text" id="setupBootstrapGist" placeholder="4a8b2c1d3e5f6a7b8c9d">
       <button class="auth-btn" id="btnSetupFinish">Mã hóa & Lưu →</button>
       <div class="auth-error" id="setupFinishError"></div>
     </div>
@@ -641,37 +540,26 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
   </div>
 </div>
 
-<!-- ════════ GUEST AUTH ════════ -->
+<!-- GUEST AUTH -->
 <div class="auth-screen" id="guestGate">
   <div class="auth-box">
     <h2>🎯 Guest</h2>
     <p class="auth-sub">Nhập API keys của bạn. Dữ liệu tách biệt hoàn toàn với Owner.</p>
-    <label class="auth-label" for="guestPAT">
-      GitHub PAT <span class="auth-label-hint">(scope: gist)</span>
-    </label>
-    <input class="auth-input" type="password" id="guestPAT"
-      placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
-    <label class="auth-label" for="guestImgBB">ImgBB API Key</label>
-    <input class="auth-input" type="password" id="guestImgBB"
-      placeholder="xxxxxxxxxxxxxxxx" autocomplete="off">
-    <label class="auth-label" for="guestGistId">
-      Gist ID <span class="auth-label-hint">(để trống → tự tạo)</span>
-    </label>
-    <input class="auth-input" type="text" id="guestGistId"
-      placeholder="Tự động tạo khi lưu lần đầu">
-    <div class="info-box">
-      Keys được lưu vào <strong>localStorage</strong> trình duyệt này.
-      Trên thiết bị khác chỉ cần nhập lại.
-    </div>
+    <label class="field-label" for="guestPAT">GitHub PAT <span class="field-label-hint">(scope: gist)</span></label>
+    <input class="field-input" type="password" id="guestPAT" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+    <label class="field-label" for="guestImgBB">ImgBB API Key</label>
+    <input class="field-input" type="password" id="guestImgBB" placeholder="xxxxxxxxxxxxxxxx" autocomplete="off">
+    <label class="field-label" for="guestGistId">Gist ID <span class="field-label-hint">(để trống → tự tạo)</span></label>
+    <input class="field-input" type="text" id="guestGistId" placeholder="Tự động tạo khi lưu lần đầu">
+    <div class="info-box">Keys được lưu vào <strong>localStorage</strong> trình duyệt này. Trên thiết bị khác chỉ cần nhập lại.</div>
     <button class="auth-btn" id="btnGuestStart">Bắt đầu →</button>
     <div class="auth-error" id="guestError"></div>
     <button class="auth-back" id="btnGuestBack">← Quay lại</button>
   </div>
 </div>
 
-<!-- ════════ APP ════════ -->
+<!-- APP -->
 <div id="app">
-
   <header>
     <span class="header-logo">TierForge</span>
     <span class="session-badge" id="sessionBadge"></span>
@@ -710,25 +598,24 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
     <div id="saveStatus"></div>
     <button class="btn btn-primary btn-sm" id="btnSave">💾 Lưu</button>
   </div>
+</div>
 
-</div><!-- /#app -->
-
-<!-- ════════ UPLOAD TOAST ════════ -->
+<!-- UPLOAD TOAST -->
 <div class="upload-toast" id="uploadToast">
   <div class="toast-title">Đang upload ảnh...</div>
   <div class="toast-bar-wrap"><div class="toast-bar" id="toastBar"></div></div>
   <div class="toast-label" id="toastLabel"></div>
 </div>
 
-<!-- ════════ ROW EDITOR MODAL ════════ -->
+<!-- MODAL: Row Editor -->
 <div class="modal-overlay hidden" id="rowEditorModal">
   <div class="modal" style="width:430px">
     <button class="close-btn" data-close="rowEditorModal" aria-label="Đóng">✕</button>
     <h2>Chỉnh sửa Tier</h2>
     <p class="sub">Tùy chỉnh màu sắc và nhãn</p>
     <div class="color-grid" id="colorGrid"></div>
-    <label for="rowLabel">Nhãn tier</label>
-    <input class="modal-input" type="text" id="rowLabel" maxlength="8" placeholder="S, A, B...">
+    <label class="field-label" for="rowLabel">Nhãn tier</label>
+    <input class="field-input" type="text" id="rowLabel" maxlength="8" placeholder="S, A, B...">
     <div class="row-actions">
       <button class="btn btn-secondary" id="btnClearRow">🗑 Xóa ảnh trong tier</button>
       <button class="btn btn-danger"    id="btnDeleteRow">✕ Xóa tier</button>
@@ -742,27 +629,18 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
   </div>
 </div>
 
-<!-- ════════ SETUP MODAL (in-app key management) ════════ -->
+<!-- MODAL: Setup -->
 <div class="modal-overlay hidden" id="setupModal">
   <div class="modal">
     <button class="close-btn" data-close="setupModal" aria-label="Đóng">✕</button>
     <h2>Cài đặt API</h2>
     <p class="sub" id="setupModalSub"></p>
-    <label for="inputPAT">
-      GitHub Personal Access Token
-      <span style="text-transform:none;letter-spacing:0;font-weight:400;opacity:.5">(scope: gist)</span>
-    </label>
-    <input class="modal-input" type="password" id="inputPAT"
-      placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
-    <label for="inputImgBB">ImgBB API Key</label>
-    <input class="modal-input" type="password" id="inputImgBB"
-      placeholder="xxxxxxxxxxxxxxxx" autocomplete="off">
-    <label for="inputGistID">
-      Data Gist ID
-      <span style="text-transform:none;letter-spacing:0;font-weight:400;opacity:.5">(để trống → tự tạo khi lưu lần đầu)</span>
-    </label>
-    <input class="modal-input" type="text" id="inputGistID"
-      placeholder="Tự động điền sau lần lưu đầu">
+    <label class="field-label" for="inputPAT">GitHub Personal Access Token <span class="field-label-hint">(scope: gist)</span></label>
+    <input class="field-input" type="password" id="inputPAT" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+    <label class="field-label" for="inputImgBB">ImgBB API Key</label>
+    <input class="field-input" type="password" id="inputImgBB" placeholder="xxxxxxxxxxxxxxxx" autocomplete="off">
+    <label class="field-label" for="inputGistID">Data Gist ID <span class="field-label-hint">(để trống → tự tạo khi lưu lần đầu)</span></label>
+    <input class="field-input" type="text" id="inputGistID" placeholder="Tự động điền sau lần lưu đầu">
     <div class="modal-actions">
       <button class="btn btn-secondary" data-close="setupModal">Đóng</button>
       <button class="btn btn-primary"   id="btnSaveSetup">Lưu cài đặt</button>
@@ -770,7 +648,7 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
   </div>
 </div>
 
-<!-- ════════ TIERLIST MANAGER MODAL ════════ -->
+<!-- MODAL: Tierlist Manager -->
 <div class="modal-overlay hidden" id="tlManagerModal">
   <div class="modal">
     <button class="close-btn" data-close="tlManagerModal" aria-label="Đóng">✕</button>
@@ -778,7 +656,7 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
     <p class="sub">Tạo, đổi tên hoặc xóa các tierlist.</p>
     <div id="tlList"></div>
     <div class="tl-create-row">
-      <input class="modal-input" type="text" id="newTlName"
+      <input class="field-input" type="text" id="newTlName"
         placeholder="Tên tierlist mới..." style="margin-bottom:0;flex:1">
       <button class="btn btn-primary" id="btnCreateTl">+ Tạo mới</button>
     </div>
@@ -788,67 +666,64 @@ main { display: flex; flex-direction: column; padding: 24px; flex: 1; gap: 20px;
 <script>
 'use strict';
 
-/* ════════════════════════════════════════════════════════
-   CONFIGURATION
-   Sau khi hoàn thành owner setup lần đầu, hardcode
-   Bootstrap Gist ID của bạn vào đây rồi re-deploy.
-════════════════════════════════════════════════════════ */
+/* ─────────────────────────────────────────────────────
+   CONFIG
+   Hardcode Bootstrap Gist ID sau khi hoàn thành setup.
+───────────────────────────────────────────────────── */
 const BOOTSTRAP_GIST_ID = '6508abf9a0177c9f60a9ae5777a85869';
 
-const COLORS = [
+const TIER_COLORS = [
   '#ff6b6b','#ff9f43','#feca57','#f9f871','#a8ff78',
   '#2ed573','#1ddce8','#74b9ff','#a29bfe','#fd79a8',
   '#e17055','#636e72','#b2bec3','#dfe6e9',
 ];
 
-/* ════════════════════════════════════════════════════════
-   SESSION  — in-memory only, never persisted as plain-text
-════════════════════════════════════════════════════════ */
+/* ─────────────────────────────────────────────────────
+   SESSION  — in-memory only, never persisted as plaintext
+───────────────────────────────────────────────────── */
 const session = {
-  mode:      null,   // 'owner' | 'guest'
+  mode:      null,  // 'owner' | 'guest'
   pat:       null,
   imgbb:     null,
-  gistId:    null,   // data gist
-  _password: null,   // owner only — kept for re-encryption on key change
+  gistId:    null,  // data gist ID
+  _password: null,  // owner only, for re-encryption
 };
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    UTILITIES
-════════════════════════════════════════════════════════ */
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-}
+───────────────────────────────────────────────────── */
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 
-function esc(s) {
-  return String(s ?? '')
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
+const esc = s => String(s ?? '')
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-function readAsDataURL(file) {
-  return new Promise((res, rej) => {
-    const r = new FileReader();
-    r.onload = () => res(r.result);
-    r.onerror = rej;
-    r.readAsDataURL(file);
-  });
-}
+const readAsDataURL = file => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = reject;
+  reader.readAsDataURL(file);
+});
 
-function contrastColor(hex) {
-  const r = parseInt(hex.slice(1,3), 16);
-  const g = parseInt(hex.slice(3,5), 16);
-  const b = parseInt(hex.slice(5,7), 16);
-  return (r*299 + g*587 + b*114) / 1000 > 128 ? '#111111' : '#ffffff';
-}
+const contrastColor = hex => {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000 > 128 ? '#111111' : '#ffffff';
+};
 
-/* ════════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+
+/* ─────────────────────────────────────────────────────
    AES-GCM CRYPTO  (PBKDF2 / SHA-256 / 200k iterations)
-   Bundle format:  base64(salt) : base64(iv) : base64(ciphertext)
-════════════════════════════════════════════════════════ */
+   Bundle format: base64(salt):base64(iv):base64(ct)
+───────────────────────────────────────────────────── */
+const _b64enc = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const _b64dec = s   => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+
 async function _deriveKey(password, salt) {
   const keyMat = await crypto.subtle.importKey(
-    'raw', new TextEncoder().encode(password),
-    'PBKDF2', false, ['deriveKey']
+    'raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']
   );
   return crypto.subtle.deriveKey(
     { name: 'PBKDF2', salt, iterations: 200_000, hash: 'SHA-256' },
@@ -858,9 +733,6 @@ async function _deriveKey(password, salt) {
     ['encrypt', 'decrypt']
   );
 }
-
-const _b64enc = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
-const _b64dec = s   => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 
 async function encryptStr(plaintext, password) {
   const salt = crypto.getRandomValues(new Uint8Array(16));
@@ -875,33 +747,31 @@ async function encryptStr(plaintext, password) {
 async function decryptStr(bundle, password) {
   const parts = bundle.split(':');
   if (parts.length !== 3) throw new Error('Bundle format không hợp lệ.');
-  const salt = _b64dec(parts[0]);
-  const iv   = _b64dec(parts[1]);
-  const ct   = _b64dec(parts[2]);
-  const key  = await _deriveKey(password, salt);
-  let plain;
+  const [salt, iv, ct] = parts.map(_b64dec);
+  const key = await _deriveKey(password, salt);
   try {
-    plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
+    const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
+    return new TextDecoder().decode(plain);
   } catch {
     throw new Error('Sai mật khẩu hoặc dữ liệu bị hỏng.');
   }
-  return new TextDecoder().decode(plain);
 }
 
-/* ════════════════════════════════════════════════════════
-   BOOTSTRAP GIST
-   • Stored as public Gist (safe — content is AES-256 encrypted)
-   • Fetch requires no auth on new devices
-   • keys shape: { pat, imgbb, dataGistId }
-════════════════════════════════════════════════════════ */
-async function saveEncryptedKeys(pat, password, keys) {
+/* ─────────────────────────────────────────────────────
+   BOOTSTRAP GIST  (stores AES-256-encrypted keys)
+───────────────────────────────────────────────────── */
+function assertBootstrapConfigured() {
   if (BOOTSTRAP_GIST_ID === 'REPLACE_WITH_BOOTSTRAP_GIST_ID') {
     throw new Error('BOOTSTRAP_GIST_ID chưa được cấu hình trong index.html.');
   }
+}
+
+async function saveEncryptedKeys(pat, password, keys) {
+  assertBootstrapConfigured();
   const bundle = await encryptStr(JSON.stringify(keys), password);
   const res = await fetch(`https://api.github.com/gists/${BOOTSTRAP_GIST_ID}`, {
     method: 'PATCH',
-    headers: { 'Authorization': `token ${pat}`, 'Content-Type': 'application/json' },
+    headers: { Authorization: `token ${pat}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       description: 'TierForge Bootstrap',
       public: true,
@@ -912,80 +782,70 @@ async function saveEncryptedKeys(pat, password, keys) {
 }
 
 async function loadAndDecryptKeys(password) {
-  if (BOOTSTRAP_GIST_ID === 'REPLACE_WITH_BOOTSTRAP_GIST_ID') {
-    throw new Error('BOOTSTRAP_GIST_ID chưa được cấu hình.');
-  }
-  // No auth — Gist is public
+  assertBootstrapConfigured();
   const res = await fetch(`https://api.github.com/gists/${BOOTSTRAP_GIST_ID}`);
   if (!res.ok) throw new Error(`Không fetch được Gist: HTTP ${res.status}`);
   const data   = await res.json();
   const bundle = data.files['tf_bootstrap.enc']?.content;
   if (!bundle) throw new Error('tf_bootstrap.enc không tìm thấy trong Gist.');
-  const plain = await decryptStr(bundle, password);
-  return JSON.parse(plain);
+  return JSON.parse(await decryptStr(bundle, password));
 }
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    DATA FACTORIES
-════════════════════════════════════════════════════════ */
-function makeDefaultRows() {
-  return [
-    { label: 'S', color: '#ff6b6b' },
-    { label: 'A', color: '#ff9f43' },
-    { label: 'B', color: '#feca57' },
-    { label: 'C', color: '#a8ff78' },
-    { label: 'D', color: '#74b9ff' },
-  ].map(r => ({ ...r, id: uid(), items: [] }));
-}
+───────────────────────────────────────────────────── */
+const makeRow = (label, color) => ({ id: uid(), label, color, items: [] });
 
-function makeDefaultTierlist(name = 'My Tierlist') {
-  return {
-    id: uid(), name,
-    createdAt: Date.now(),
-    rows: makeDefaultRows(),
-    pool: [],
-    displayMode: 'square',
-  };
-}
+const makeDefaultRows = () => [
+  makeRow('S', '#ff6b6b'),
+  makeRow('A', '#ff9f43'),
+  makeRow('B', '#feca57'),
+  makeRow('C', '#a8ff78'),
+  makeRow('D', '#74b9ff'),
+];
 
-function freshState() {
-  const tl = makeDefaultTierlist();
+const makeTierlist = (name = 'My Tierlist') => ({
+  id: uid(), name,
+  createdAt: Date.now(),
+  rows: makeDefaultRows(),
+  pool: [],
+  displayMode: 'square',
+});
+
+const freshState = () => {
+  const tl = makeTierlist();
   return { tierlists: [tl], currentId: tl.id };
-}
+};
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    APP STATE
-════════════════════════════════════════════════════════ */
+───────────────────────────────────────────────────── */
 let state        = freshState();
 let editingRowId = null;
 let drag         = null;
-let isDirty      = false;  // unsaved changes flag
+let isDirty      = false;
 
-function current() {
-  return state.tierlists.find(t => t.id === state.currentId) ?? null;
-}
+const current = () => state.tierlists.find(t => t.id === state.currentId) ?? null;
+const markDirty = () => { isDirty = true; };
 
-function markDirty() {
-  isDirty = true;
-}
-
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    STATUS BAR
-════════════════════════════════════════════════════════ */
+───────────────────────────────────────────────────── */
 let _statusTimer = null;
+
 function setStatus(html, cls = '', autoClear = 0) {
-  const el = document.getElementById('saveStatus');
-  el.innerHTML = html;
-  el.className = cls;
+  const el = $('saveStatus');
+  el.innerHTML  = html;
+  el.className  = cls;
   clearTimeout(_statusTimer);
   if (autoClear > 0) {
     _statusTimer = setTimeout(() => { el.innerHTML = ''; el.className = ''; }, autoClear);
   }
 }
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    RENDER
-════════════════════════════════════════════════════════ */
+───────────────────────────────────────────────────── */
 function renderAll() {
   renderTlSelect();
   renderTierlist();
@@ -993,15 +853,21 @@ function renderAll() {
 }
 
 function renderTlSelect() {
-  document.getElementById('tlSelect').innerHTML = state.tierlists
-    .map(t => `<option value="${esc(t.id)}"${t.id === state.currentId ? ' selected' : ''}>
-        ${esc(t.name)}</option>`)
+  $('tlSelect').innerHTML = state.tierlists
+    .map(t => `<option value="${esc(t.id)}"${t.id === state.currentId ? ' selected' : ''}>${esc(t.name)}</option>`)
     .join('');
+}
+
+function itemCardHTML(item) {
+  return `<div class="item-card" draggable="true" data-item-id="${esc(item.id)}" title="${esc(item.name)}">
+    <img src="${esc(item.url)}" alt="${esc(item.name)}" loading="lazy">
+    <button class="item-remove" data-action="remove-item" data-item-id="${esc(item.id)}" aria-label="Xóa">✕</button>
+  </div>`;
 }
 
 function renderTierlist() {
   const tl   = current();
-  const wrap = document.getElementById('tierlistWrap');
+  const wrap = $('tierlistWrap');
   if (!tl || tl.rows.length === 0) {
     wrap.className = 'tierlist-wrap';
     wrap.innerHTML = '<div class="tierlist-empty">Chưa có tier nào. Nhấn "+ Thêm tier" để bắt đầu.</div>';
@@ -1010,30 +876,24 @@ function renderTierlist() {
   wrap.className = `tierlist-wrap mode-${tl.displayMode || 'square'}`;
   wrap.innerHTML = tl.rows.map((row, i) => `
     <div class="tier-row" data-row-id="${esc(row.id)}">
-      <div class="tier-label"
-        style="background:${esc(row.color)};color:${contrastColor(row.color)}">
-        ${esc(row.label)}
-      </div>
+      <div class="tier-label" style="background:${esc(row.color)};color:${contrastColor(row.color)}">${esc(row.label)}</div>
       <div class="tier-items" data-zone="row" data-row-id="${esc(row.id)}">
-        ${row.items.map(item => itemCardHTML(item)).join('')}
+        ${row.items.map(itemCardHTML).join('')}
       </div>
       <div class="tier-controls">
-        <button class="ctrl-btn" data-action="edit-row"
-          data-row-id="${esc(row.id)}" title="Cài đặt">⚙</button>
-        <button class="ctrl-btn" data-action="move-up"
-          data-row-idx="${i}" title="Lên">▲</button>
-        <button class="ctrl-btn" data-action="move-down"
-          data-row-idx="${i}" title="Xuống">▼</button>
+        <button class="ctrl-btn" data-action="edit-row"   data-row-id="${esc(row.id)}" title="Cài đặt">⚙</button>
+        <button class="ctrl-btn" data-action="move-up"    data-row-idx="${i}"          title="Lên">▲</button>
+        <button class="ctrl-btn" data-action="move-down"  data-row-idx="${i}"          title="Xuống">▼</button>
       </div>
     </div>`).join('');
 }
 
 function renderPool() {
   const tl      = current();
-  const poolEl  = document.getElementById('poolItems');
-  const counter = document.getElementById('poolCount');
+  const poolEl  = $('poolItems');
+  const counter = $('poolCount');
   if (!tl) {
-    poolEl.innerHTML = '';
+    poolEl.innerHTML    = '';
     counter.textContent = '0 ảnh';
     return;
   }
@@ -1041,35 +901,41 @@ function renderPool() {
   poolEl.dataset.zone = 'pool';
   poolEl.innerHTML    = tl.pool.length === 0
     ? '<span class="pool-empty">Kéo ảnh vào đây hoặc upload ảnh mới</span>'
-    : tl.pool.map(item => itemCardHTML(item)).join('');
+    : tl.pool.map(itemCardHTML).join('');
   counter.textContent = `${tl.pool.length} ảnh`;
 }
 
-function itemCardHTML(item) {
-  return `<div class="item-card" draggable="true"
-    data-item-id="${esc(item.id)}" title="${esc(item.name)}">
-    <img src="${esc(item.url)}" alt="${esc(item.name)}" loading="lazy">
-    <button class="item-remove" data-action="remove-item"
-      data-item-id="${esc(item.id)}" aria-label="Xóa">✕</button>
-  </div>`;
+/* ─────────────────────────────────────────────────────
+   DRAG & DROP
+───────────────────────────────────────────────────── */
+function clearDragIndicators() {
+  document.querySelectorAll('.drag-over,.drop-before,.drop-after')
+    .forEach(el => el.classList.remove('drag-over', 'drop-before', 'drop-after'));
 }
 
-/* ════════════════════════════════════════════════════════
-   DRAG & DROP
-════════════════════════════════════════════════════════ */
+// Resolve drop insert index within an array, given an anchor item id and left/right half
+function resolveInsertIndex(arr, anchorId, isLeft) {
+  const anchorIdx = arr.findIndex(x => x.id === anchorId);
+  if (anchorIdx === -1) return arr.length;
+  return isLeft ? anchorIdx : anchorIdx + 1;
+}
+
 document.addEventListener('dragstart', e => {
   const card = e.target.closest('.item-card');
   if (!card) return;
   const tl = current();
-  if (!tl) return;
+  if (!tl)  return;
+
   const itemId = card.dataset.itemId;
   const zone   = card.closest('[data-zone]');
   const inPool = zone?.dataset.zone === 'pool';
   const rowId  = zone?.dataset.rowId ?? null;
-  const item   = inPool
+
+  const item = inPool
     ? tl.pool.find(x => x.id === itemId)
     : tl.rows.find(r => r.id === rowId)?.items.find(x => x.id === itemId);
   if (!item) return;
+
   drag = { item, inPool, rowId };
   card.classList.add('dragging');
   e.dataTransfer.effectAllowed = 'move';
@@ -1077,36 +943,58 @@ document.addEventListener('dragstart', e => {
 });
 
 document.addEventListener('dragend', () => {
+  clearDragIndicators();
   document.querySelectorAll('.item-card.dragging').forEach(c => c.classList.remove('dragging'));
-  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
   drag = null;
 });
 
 document.addEventListener('dragover', e => {
-  const zone = e.target.closest('[data-zone]');
-  if (!zone) return;
+  if (!e.target.closest('[data-zone]')) return;
   e.preventDefault();
-  zone.classList.add('drag-over');
+  clearDragIndicators();
+
+  const overCard = e.target.closest('.item-card:not(.dragging)');
+  if (overCard) {
+    const { left, width } = overCard.getBoundingClientRect();
+    overCard.classList.add(e.clientX < left + width / 2 ? 'drop-before' : 'drop-after');
+  } else {
+    e.target.closest('[data-zone]')?.classList.add('drag-over');
+  }
 });
 
 document.addEventListener('dragleave', e => {
   const zone = e.target.closest('[data-zone]');
-  if (zone && !zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+  if (zone && !zone.contains(e.relatedTarget)) {
+    zone.classList.remove('drag-over');
+    zone.querySelectorAll('.drop-before,.drop-after')
+      .forEach(el => el.classList.remove('drop-before', 'drop-after'));
+  }
 });
 
 document.addEventListener('drop', e => {
   e.preventDefault();
-  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  clearDragIndicators();
   if (!drag) return;
+
   const zone = e.target.closest('[data-zone]');
   if (!zone) { drag = null; return; }
+
   const tl = current();
   if (!tl)  { drag = null; return; }
+
   const destIsPool = zone.dataset.zone === 'pool';
   const destRowId  = zone.dataset.rowId ?? null;
-  // No-op: same destination
-  if (destIsPool && drag.inPool)               { drag = null; return; }
-  if (!destIsPool && destRowId === drag.rowId) { drag = null; return; }
+
+  // Determine insert position
+  const overCard = e.target.closest('.item-card:not(.dragging)');
+  let insertIdx  = null;
+  if (overCard) {
+    const { left, width } = overCard.getBoundingClientRect();
+    const isLeft = e.clientX < left + width / 2;
+    const destArr = destIsPool ? tl.pool : (tl.rows.find(r => r.id === destRowId)?.items ?? []);
+    insertIdx = resolveInsertIndex(destArr, overCard.dataset.itemId, isLeft);
+  }
+
   // Remove from source
   if (drag.inPool) {
     tl.pool = tl.pool.filter(x => x.id !== drag.item.id);
@@ -1114,45 +1002,52 @@ document.addEventListener('drop', e => {
     const srcRow = tl.rows.find(r => r.id === drag.rowId);
     if (srcRow) srcRow.items = srcRow.items.filter(x => x.id !== drag.item.id);
   }
-  // Add to destination
+
+  // Insert at destination
   if (destIsPool) {
-    tl.pool.push(drag.item);
+    insertIdx != null
+      ? tl.pool.splice(insertIdx, 0, drag.item)
+      : tl.pool.push(drag.item);
   } else {
     const destRow = tl.rows.find(r => r.id === destRowId);
-    if (destRow) destRow.items.push(drag.item);
+    if (destRow) {
+      insertIdx != null
+        ? destRow.items.splice(insertIdx, 0, drag.item)
+        : destRow.items.push(drag.item);
+    }
   }
+
   drag = null;
   markDirty();
   renderTierlist();
   renderPool();
 });
 
-/* ════════════════════════════════════════════════════════
-   GLOBAL EVENT DELEGATION
-════════════════════════════════════════════════════════ */
+/* ─────────────────────────────────────────────────────
+   EVENT DELEGATION (clicks)
+───────────────────────────────────────────────────── */
 document.addEventListener('click', e => {
-  // Modal close buttons
-  const closeBtn = e.target.closest('[data-close]');
-  if (closeBtn) { closeModal(closeBtn.dataset.close); return; }
-  // Click outside modal
+  const closeTarget = e.target.closest('[data-close]');
+  if (closeTarget)                            { closeModal(closeTarget.dataset.close); return; }
   if (e.target.classList.contains('modal-overlay')) { closeModal(e.target.id); return; }
-  // Data-action handlers
-  const actionEl = e.target.closest('[data-action]');
-  if (!actionEl) return;
-  const { action, rowId, rowIdx, itemId, tlId } = actionEl.dataset;
+
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const { action, rowId, rowIdx, itemId, tlId } = el.dataset;
+
   switch (action) {
-    case 'edit-row':    openRowEditor(rowId);          break;
-    case 'move-up':     moveRow(parseInt(rowIdx), -1); break;
-    case 'move-down':   moveRow(parseInt(rowIdx),  1); break;
-    case 'remove-item': removeItem(itemId);            break;
-    case 'rename-tl':   renameTl(tlId);                break;
-    case 'delete-tl':   deleteTl(tlId);                break;
+    case 'edit-row':    openRowEditor(rowId);           break;
+    case 'move-up':     moveRow(+rowIdx, -1);           break;
+    case 'move-down':   moveRow(+rowIdx,  1);           break;
+    case 'remove-item': removeItem(itemId);             break;
+    case 'rename-tl':   renameTl(tlId);                 break;
+    case 'delete-tl':   deleteTl(tlId);                 break;
   }
 });
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    ROW OPERATIONS
-════════════════════════════════════════════════════════ */
+───────────────────────────────────────────────────── */
 function moveRow(idx, dir) {
   const tl = current();
   if (!tl) return;
@@ -1164,25 +1059,23 @@ function moveRow(idx, dir) {
 }
 
 function addRow(insertIdx = null) {
-  const tl  = current();
+  const tl = current();
   if (!tl) return;
-  const row = { id: uid(), label: 'NEW', color: '#636e72', items: [] };
-  if (insertIdx === null) tl.rows.push(row);
-  else tl.rows.splice(insertIdx, 0, row);
+  const row = makeRow('NEW', '#636e72');
+  insertIdx == null ? tl.rows.push(row) : tl.rows.splice(insertIdx, 0, row);
   markDirty();
   renderTierlist();
 }
 
 function openRowEditor(rowId) {
   const tl  = current();
-  if (!tl) return;
+  if (!tl)  return;
   const row = tl.rows.find(r => r.id === rowId);
   if (!row) return;
   editingRowId = rowId;
-  const grid = document.getElementById('colorGrid');
-  grid.innerHTML = COLORS.map(c =>
-    `<div class="color-swatch ${c === row.color ? 'active' : ''}"
-      data-color="${c}" style="background:${c}"></div>`
+  const grid = $('colorGrid');
+  grid.innerHTML = TIER_COLORS.map(c =>
+    `<div class="color-swatch${c === row.color ? ' active' : ''}" data-color="${c}" style="background:${c}"></div>`
   ).join('');
   grid.onclick = e => {
     const sw = e.target.closest('.color-swatch');
@@ -1190,29 +1083,31 @@ function openRowEditor(rowId) {
     grid.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
     sw.classList.add('active');
   };
-  document.getElementById('rowLabel').value = row.label;
+  $('rowLabel').value = row.label;
   openModal('rowEditorModal');
 }
 
-document.getElementById('btnSaveRow').addEventListener('click', () => {
-  const tl  = current();
-  if (!tl || !editingRowId) return;
-  const row = tl.rows.find(r => r.id === editingRowId);
+function getEditingRow() {
+  const tl = current();
+  return tl && editingRowId ? tl.rows.find(r => r.id === editingRowId) ?? null : null;
+}
+
+$('btnSaveRow').addEventListener('click', () => {
+  const row = getEditingRow();
   if (!row) return;
   const active = document.querySelector('#colorGrid .color-swatch.active');
   if (active) row.color = active.dataset.color;
-  const label = document.getElementById('rowLabel').value.trim();
+  const label = $('rowLabel').value.trim();
   if (label) row.label = label;
   markDirty();
   closeModal('rowEditorModal');
   renderTierlist();
 });
 
-document.getElementById('btnClearRow').addEventListener('click', () => {
+$('btnClearRow').addEventListener('click', () => {
   const tl  = current();
-  if (!tl || !editingRowId) return;
-  const row = tl.rows.find(r => r.id === editingRowId);
-  if (!row) return;
+  const row = getEditingRow();
+  if (!tl || !row) return;
   tl.pool.push(...row.items);
   row.items = [];
   markDirty();
@@ -1221,9 +1116,9 @@ document.getElementById('btnClearRow').addEventListener('click', () => {
   renderPool();
 });
 
-document.getElementById('btnDeleteRow').addEventListener('click', () => {
+$('btnDeleteRow').addEventListener('click', () => {
   const tl = current();
-  if (!tl || !editingRowId) return;
+  if (!tl) return;
   if (tl.rows.length === 1) { alert('Không thể xóa tier cuối cùng.'); return; }
   const idx = tl.rows.findIndex(r => r.id === editingRowId);
   if (idx === -1) return;
@@ -1235,38 +1130,54 @@ document.getElementById('btnDeleteRow').addEventListener('click', () => {
   renderPool();
 });
 
-document.getElementById('btnAddAbove').addEventListener('click', () => {
+$('btnAddAbove').addEventListener('click', () => {
   const tl  = current();
-  if (!tl || !editingRowId) return;
+  if (!tl)  return;
   const idx = tl.rows.findIndex(r => r.id === editingRowId);
   closeModal('rowEditorModal');
   if (idx !== -1) addRow(idx);
 });
 
-document.getElementById('btnAddBelow').addEventListener('click', () => {
+$('btnAddBelow').addEventListener('click', () => {
   const tl  = current();
-  if (!tl || !editingRowId) return;
+  if (!tl)  return;
   const idx = tl.rows.findIndex(r => r.id === editingRowId);
   closeModal('rowEditorModal');
   if (idx !== -1) addRow(idx + 1);
 });
 
-document.getElementById('btnAddRow').addEventListener('click', () => addRow());
+$('btnAddRow').addEventListener('click', () => addRow());
 
+/* ─────────────────────────────────────────────────────
+   ITEM OPERATIONS
+───────────────────────────────────────────────────── */
 function removeItem(itemId) {
   const tl = current();
   if (!tl) return;
-  tl.pool = tl.pool.filter(x => x.id !== itemId);
-  tl.rows.forEach(r => { r.items = r.items.filter(x => x.id !== itemId); });
+
+  if (tl.pool.some(x => x.id === itemId)) {
+    // In pool → delete permanently
+    tl.pool = tl.pool.filter(x => x.id !== itemId);
+  } else {
+    // In a tier → return to pool
+    for (const row of tl.rows) {
+      const idx = row.items.findIndex(x => x.id === itemId);
+      if (idx !== -1) {
+        tl.pool.push(...row.items.splice(idx, 1));
+        break;
+      }
+    }
+  }
+
   markDirty();
   renderTierlist();
   renderPool();
 }
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    DISPLAY MODE
-════════════════════════════════════════════════════════ */
-document.getElementById('displayMode').addEventListener('change', e => {
+───────────────────────────────────────────────────── */
+$('displayMode').addEventListener('change', e => {
   const tl = current();
   if (!tl) return;
   tl.displayMode = e.target.value;
@@ -1275,47 +1186,41 @@ document.getElementById('displayMode').addEventListener('change', e => {
   renderPool();
 });
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    TIERLIST MANAGER
-════════════════════════════════════════════════════════ */
-document.getElementById('tlSelect').addEventListener('change', e => {
+───────────────────────────────────────────────────── */
+$('tlSelect').addEventListener('change', e => {
   state.currentId = e.target.value;
   const tl = current();
-  if (tl) document.getElementById('displayMode').value = tl.displayMode ?? 'square';
+  if (tl) $('displayMode').value = tl.displayMode ?? 'square';
   renderTierlist();
   renderPool();
 });
 
-document.getElementById('btnTlManager').addEventListener('click', () => {
+$('btnTlManager').addEventListener('click', () => {
   renderTlList();
   openModal('tlManagerModal');
 });
 
 function renderTlList() {
   const canDelete = state.tierlists.length > 1;
-  document.getElementById('tlList').innerHTML = state.tierlists.map(t => `
+  $('tlList').innerHTML = state.tierlists.map(t => `
     <div class="tl-list-item">
       <span class="tl-list-name">${esc(t.name)}</span>
       <span class="tl-list-date">${new Date(t.createdAt).toLocaleDateString('vi')}</span>
-      <button class="btn btn-secondary btn-sm"
-        data-action="rename-tl" data-tl-id="${esc(t.id)}">✏</button>
-      ${canDelete
-        ? `<button class="btn btn-danger btn-sm"
-            data-action="delete-tl" data-tl-id="${esc(t.id)}">✕</button>`
-        : ''}
+      <button class="btn btn-secondary btn-sm" data-action="rename-tl" data-tl-id="${esc(t.id)}">✏</button>
+      ${canDelete ? `<button class="btn btn-danger btn-sm" data-action="delete-tl" data-tl-id="${esc(t.id)}">✕</button>` : ''}
     </div>`).join('');
 }
 
-document.getElementById('btnCreateTl').addEventListener('click', createTierlist);
-document.getElementById('newTlName').addEventListener('keydown', e => {
-  if (e.key === 'Enter') createTierlist();
-});
+$('btnCreateTl').addEventListener('click', createTierlist);
+$('newTlName').addEventListener('keydown', e => { if (e.key === 'Enter') createTierlist(); });
 
 function createTierlist() {
-  const input = document.getElementById('newTlName');
+  const input = $('newTlName');
   const name  = input.value.trim();
   if (!name) return;
-  const tl = makeDefaultTierlist(name);
+  const tl = makeTierlist(name);
   state.tierlists.push(tl);
   state.currentId = tl.id;
   input.value = '';
@@ -1327,13 +1232,12 @@ function createTierlist() {
 function renameTl(id) {
   const tl = state.tierlists.find(t => t.id === id);
   if (!tl) return;
-  const n = prompt('Tên mới:', tl.name);
-  if (n?.trim()) {
-    tl.name = n.trim();
-    markDirty();
-    renderTlList();
-    renderTlSelect();
-  }
+  const name = prompt('Tên mới:', tl.name)?.trim();
+  if (!name) return;
+  tl.name = name;
+  markDirty();
+  renderTlList();
+  renderTlSelect();
 }
 
 function deleteTl(id) {
@@ -1345,13 +1249,14 @@ function deleteTl(id) {
   renderAll();
 }
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    IMAGE UPLOAD → ImgBB
-════════════════════════════════════════════════════════ */
-document.getElementById('fileInput').addEventListener('change', async function () {
+───────────────────────────────────────────────────── */
+$('fileInput').addEventListener('change', async function () {
   const files = Array.from(this.files);
   this.value  = '';
   if (!files.length) return;
+
   if (!session.imgbb) {
     alert('Vui lòng cấu hình ImgBB API key trong ⚙ API Keys.');
     return;
@@ -1359,13 +1264,14 @@ document.getElementById('fileInput').addEventListener('change', async function (
   const tl = current();
   if (!tl) return;
 
-  const toast = document.getElementById('uploadToast');
-  const bar   = document.getElementById('toastBar');
-  const lbl   = document.getElementById('toastLabel');
+  const toast = $('uploadToast');
+  const bar   = $('toastBar');
+  const lbl   = $('toastLabel');
   toast.classList.add('visible');
   bar.style.width = '0%';
 
   let done = 0, failed = 0;
+
   for (const file of files) {
     lbl.textContent = `${done + 1} / ${files.length} — ${file.name}`;
     try {
@@ -1373,10 +1279,9 @@ document.getElementById('fileInput').addEventListener('change', async function (
       const fd  = new FormData();
       fd.append('image', b64.split(',')[1]);
       fd.append('name',  file.name.replace(/\.[^.]+$/, ''));
-      const res  = await fetch(
-        `https://api.imgbb.com/1/upload?key=${session.imgbb}`,
-        { method: 'POST', body: fd }
-      );
+      const res  = await fetch(`https://api.imgbb.com/1/upload?key=${session.imgbb}`, {
+        method: 'POST', body: fd,
+      });
       const data = await res.json();
       if (data.success) {
         tl.pool.push({
@@ -1395,8 +1300,7 @@ document.getElementById('fileInput').addEventListener('change', async function (
       console.error('Upload error:', err);
       failed++;
     }
-    done++;
-    bar.style.width = `${(done / files.length) * 100}%`;
+    bar.style.width = `${(++done / files.length) * 100}%`;
   }
 
   toast.classList.remove('visible');
@@ -1410,30 +1314,29 @@ document.getElementById('fileInput').addEventListener('change', async function (
   );
 });
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    GIST — SAVE / LOAD
-════════════════════════════════════════════════════════ */
+───────────────────────────────────────────────────── */
 async function saveToGist() {
   const { pat, gistId } = session;
-  const payload = {
-    description: 'TierForge Data',
-    public: false,
-    files: { 'tierforge.json': { content: JSON.stringify(state) } },
-  };
-  const url    = gistId
-    ? `https://api.github.com/gists/${gistId}`
-    : 'https://api.github.com/gists';
-  const method = gistId ? 'PATCH' : 'POST';
-  const res = await fetch(url, {
-    method,
-    headers: { 'Authorization': `token ${pat}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
+  const res = await fetch(
+    gistId ? `https://api.github.com/gists/${gistId}` : 'https://api.github.com/gists',
+    {
+      method: gistId ? 'PATCH' : 'POST',
+      headers: { Authorization: `token ${pat}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        description: 'TierForge Data',
+        public: false,
+        files: { 'tierforge.json': { content: JSON.stringify(state) } },
+      }),
+    }
+  );
   if (!res.ok) throw new Error(`GitHub API: HTTP ${res.status}`);
   const data = await res.json();
   session.gistId = data.id;
-  document.getElementById('inputGistID').value = data.id;
-  // After creating a new data gist, persist its ID
+  $('inputGistID').value = data.id;
+
+  // Persist the new gist ID
   if (session.mode === 'owner' && session._password) {
     try {
       await saveEncryptedKeys(session.pat, session._password, {
@@ -1449,21 +1352,24 @@ async function saveToGist() {
 async function loadFromGist() {
   const { pat, gistId } = session;
   if (!gistId) return false;
+
   const res = await fetch(`https://api.github.com/gists/${gistId}`, {
-    headers: { 'Authorization': `token ${pat}` },
+    headers: { Authorization: `token ${pat}` },
   });
   if (!res.ok) throw new Error(`GitHub API: HTTP ${res.status}`);
+
   const data    = await res.json();
   const content = data.files['tierforge.json']?.content;
   if (!content) throw new Error('tierforge.json không tìm thấy trong Gist.');
+
   const parsed = JSON.parse(content);
   // Migration: ensure every item has a stable ID
-  (parsed.tierlists ?? []).forEach(tl => {
+  for (const tl of parsed.tierlists ?? []) {
     tl.pool  = (tl.pool  ?? []).map(it => it.id ? it : { id: uid(), ...it });
-    (tl.rows ?? []).forEach(r => {
-      r.items = (r.items ?? []).map(it => it.id ? it : { id: uid(), ...it });
-    });
-  });
+    for (const row of tl.rows ?? []) {
+      row.items = (row.items ?? []).map(it => it.id ? it : { id: uid(), ...it });
+    }
+  }
   state = parsed;
   if (!state.currentId && state.tierlists.length > 0) {
     state.currentId = state.tierlists[0].id;
@@ -1474,7 +1380,6 @@ async function loadFromGist() {
 async function saveAll() {
   if (!session.pat) { openSetup(); return; }
   setStatus('<span class="spinner"></span> Đang lưu...', 'saving');
-  // Always keep a local backup
   localStorage.setItem(`tf_local_${session.mode}`, JSON.stringify(state));
   try {
     await saveToGist();
@@ -1485,44 +1390,41 @@ async function saveAll() {
   }
 }
 
-document.getElementById('btnSave').addEventListener('click', saveAll);
+$('btnSave').addEventListener('click', saveAll);
 
-// Warn before tab close if there are unsaved changes
 window.addEventListener('beforeunload', e => {
-  if (isDirty) {
-    e.preventDefault();
-    e.returnValue = '';
-  }
+  if (isDirty) { e.preventDefault(); e.returnValue = ''; }
 });
 
-/* ════════════════════════════════════════════════════════
-   IN-APP SETUP MODAL (key management post-login)
-════════════════════════════════════════════════════════ */
+/* ─────────────────────────────────────────────────────
+   IN-APP SETUP MODAL
+───────────────────────────────────────────────────── */
 function openSetup() {
-  const isOwner = session.mode === 'owner';
-  document.getElementById('setupModalSub').textContent = isOwner
+  $('setupModalSub').textContent = session.mode === 'owner'
     ? 'Owner — thay đổi keys sẽ được mã hóa và cập nhật lên Bootstrap Gist.'
     : 'Guest — keys được lưu trong localStorage trình duyệt này.';
-  document.getElementById('inputPAT').value    = session.pat    ?? '';
-  document.getElementById('inputImgBB').value  = session.imgbb  ?? '';
-  document.getElementById('inputGistID').value = session.gistId ?? '';
+  $('inputPAT').value    = session.pat    ?? '';
+  $('inputImgBB').value  = session.imgbb  ?? '';
+  $('inputGistID').value = session.gistId ?? '';
   openModal('setupModal');
 }
 
-document.getElementById('btnSetup').addEventListener('click', openSetup);
+$('btnSetup').addEventListener('click', openSetup);
 
-document.getElementById('btnSaveSetup').addEventListener('click', async () => {
-  const pat   = document.getElementById('inputPAT').value.trim();
-  const imgbb = document.getElementById('inputImgBB').value.trim();
-  const gist  = document.getElementById('inputGistID').value.trim();
+$('btnSaveSetup').addEventListener('click', async () => {
+  const pat   = $('inputPAT').value.trim();
+  const imgbb = $('inputImgBB').value.trim();
+  const gist  = $('inputGistID').value.trim();
   if (pat)   session.pat   = pat;
   if (imgbb) session.imgbb = imgbb;
   session.gistId = gist || null;
+
   if (session.mode === 'guest') {
     if (pat)   localStorage.setItem('tf_guest_pat',   pat);
     if (imgbb) localStorage.setItem('tf_guest_imgbb', imgbb);
-    if (gist)  localStorage.setItem('tf_guest_gist',  gist);
-    else       localStorage.removeItem('tf_guest_gist');
+    gist
+      ? localStorage.setItem('tf_guest_gist', gist)
+      : localStorage.removeItem('tf_guest_gist');
   } else if (session.mode === 'owner' && session._password) {
     try {
       await saveEncryptedKeys(session.pat, session._password, {
@@ -1536,37 +1438,34 @@ document.getElementById('btnSaveSetup').addEventListener('click', async () => {
   setStatus('✓ Đã lưu cài đặt', 'saved', 1500);
 });
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    MODAL HELPERS
-════════════════════════════════════════════════════════ */
-function openModal(id)  { document.getElementById(id)?.classList.remove('hidden'); }
-function closeModal(id) { document.getElementById(id)?.classList.add('hidden'); }
+───────────────────────────────────────────────────── */
+const openModal  = id => $(id)?.classList.remove('hidden');
+const closeModal = id => $(id)?.classList.add('hidden');
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    AUTH HELPERS
-════════════════════════════════════════════════════════ */
-function showAuthScreen(id) { document.getElementById(id)?.classList.add('visible'); }
-function hideAuthScreen(id) { document.getElementById(id)?.classList.remove('visible'); }
+───────────────────────────────────────────────────── */
+const showAuthScreen = id => $(id)?.classList.add('visible');
+const hideAuthScreen = id => $(id)?.classList.remove('visible');
+const setAuthErr     = (id, msg) => { const el = $(id); if (el) el.textContent = msg; };
+
 function showOwnerStep(id) {
-  // Scope to ownerGate only to avoid collisions
   document.querySelectorAll('#ownerGate .setup-step').forEach(s => s.classList.remove('active'));
-  document.getElementById(id)?.classList.add('active');
-}
-function setAuthErr(id, msg) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = msg;
+  $(id)?.classList.add('active');
 }
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    INIT APP  (called after successful auth)
-════════════════════════════════════════════════════════ */
+───────────────────────────────────────────────────── */
 async function initApp() {
-  document.getElementById('landing').style.display = 'none';
+  $('landing').style.display = 'none';
   hideAuthScreen('ownerGate');
   hideAuthScreen('guestGate');
-  document.getElementById('app').style.display = 'flex';
+  $('app').style.display = 'flex';
 
-  const badge = document.getElementById('sessionBadge');
+  const badge = $('sessionBadge');
   badge.className   = `session-badge ${session.mode}`;
   badge.textContent = session.mode === 'owner' ? '👑 Owner' : '🎯 Guest';
 
@@ -1589,79 +1488,72 @@ async function initApp() {
     if (!state.currentId) state.currentId = state.tierlists[0].id;
     isDirty = false;
   }
-  document.getElementById('displayMode').value = current()?.displayMode ?? 'square';
+  $('displayMode').value = current()?.displayMode ?? 'square';
   renderAll();
 }
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    LOGOUT
-════════════════════════════════════════════════════════ */
-document.getElementById('btnLogout').addEventListener('click', async () => {
+───────────────────────────────────────────────────── */
+$('btnLogout').addEventListener('click', async () => {
   if (isDirty) {
-    const choice = confirm('Có thay đổi chưa được lưu.\nNhấn OK để lưu trước khi đăng xuất, Cancel để đăng xuất ngay.');
-    if (choice) {
-      await saveAll();
-    }
+    const save = confirm('Có thay đổi chưa được lưu.\nNhấn OK để lưu trước khi đăng xuất, Cancel để đăng xuất ngay.');
+    if (save) await saveAll();
   }
-  // Clear session
-  Object.assign(session, { mode:null, pat:null, imgbb:null, gistId:null, _password:null });
-  state  = freshState();
+  Object.assign(session, { mode: null, pat: null, imgbb: null, gistId: null, _password: null });
+  state   = freshState();
   isDirty = false;
-  document.getElementById('app').style.display      = 'none';
-  document.getElementById('landing').style.display  = 'flex';
+  $('app').style.display     = 'none';
+  $('landing').style.display = 'flex';
 });
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    LANDING — MODE SELECT
-════════════════════════════════════════════════════════ */
-document.getElementById('btnModeOwner').addEventListener('click', () => {
-  document.getElementById('landing').style.display = 'none';
+───────────────────────────────────────────────────── */
+$('btnModeOwner').addEventListener('click', () => {
+  $('landing').style.display = 'none';
   showAuthScreen('ownerGate');
-  // First-time setup vs returning login
-  const isFirstTime = BOOTSTRAP_GIST_ID === 'REPLACE_WITH_BOOTSTRAP_GIST_ID';
-  showOwnerStep(isFirstTime ? 'ownerStep1' : 'ownerStep0');
+  showOwnerStep(BOOTSTRAP_GIST_ID === 'REPLACE_WITH_BOOTSTRAP_GIST_ID' ? 'ownerStep1' : 'ownerStep0');
 });
 
-document.getElementById('btnModeGuest').addEventListener('click', () => {
-  document.getElementById('landing').style.display = 'none';
+$('btnModeGuest').addEventListener('click', () => {
+  $('landing').style.display = 'none';
   showAuthScreen('guestGate');
-  // Pre-fill from localStorage
-  document.getElementById('guestPAT').value    = localStorage.getItem('tf_guest_pat')   ?? '';
-  document.getElementById('guestImgBB').value  = localStorage.getItem('tf_guest_imgbb') ?? '';
-  document.getElementById('guestGistId').value = localStorage.getItem('tf_guest_gist')  ?? '';
+  $('guestPAT').value    = localStorage.getItem('tf_guest_pat')   ?? '';
+  $('guestImgBB').value  = localStorage.getItem('tf_guest_imgbb') ?? '';
+  $('guestGistId').value = localStorage.getItem('tf_guest_gist')  ?? '';
 });
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    BACK TO LANDING
-════════════════════════════════════════════════════════ */
+───────────────────────────────────────────────────── */
 function goToLanding() {
   hideAuthScreen('ownerGate');
   hideAuthScreen('guestGate');
-  document.getElementById('landing').style.display = 'flex';
+  $('landing').style.display = 'flex';
 }
-document.getElementById('btnOwnerBack').addEventListener('click',  goToLanding);
-document.getElementById('btnSetupBack1').addEventListener('click', goToLanding);
-document.getElementById('btnGuestBack').addEventListener('click',  goToLanding);
-document.getElementById('btnGoSetup').addEventListener('click', () => showOwnerStep('ownerStep1'));
+$('btnOwnerBack').addEventListener('click',  goToLanding);
+$('btnSetupBack1').addEventListener('click', goToLanding);
+$('btnGuestBack').addEventListener('click',  goToLanding);
+$('btnGoSetup').addEventListener('click', () => showOwnerStep('ownerStep1'));
 
-/* ════════════════════════════════════════════════════════
-   OWNER FLOW — Step 0: login (returning user)
-════════════════════════════════════════════════════════ */
+/* ─────────────────────────────────────────────────────
+   OWNER FLOW — Step 0: login
+───────────────────────────────────────────────────── */
 async function ownerLogin() {
-  const pass  = document.getElementById('ownerPassInput').value.trim();
-  const btn   = document.getElementById('btnOwnerLogin');
+  const pass = $('ownerPassInput').value.trim();
+  const btn  = $('btnOwnerLogin');
   setAuthErr('ownerLoginError', '');
   if (!pass) return;
   btn.textContent = 'Đang giải mã...';
   btn.disabled    = true;
   try {
     const keys = await loadAndDecryptKeys(pass);
-    session.mode      = 'owner';
-    session.pat       = keys.pat;
-    session.imgbb     = keys.imgbb;
-    session.gistId    = keys.dataGistId ?? null;
-    session._password = pass;
-    document.getElementById('ownerPassInput').value = '';
+    Object.assign(session, {
+      mode: 'owner', pat: keys.pat, imgbb: keys.imgbb,
+      gistId: keys.dataGistId ?? null, _password: pass,
+    });
+    $('ownerPassInput').value = '';
     await initApp();
   } catch (err) {
     setAuthErr('ownerLoginError', err.message);
@@ -1670,76 +1562,60 @@ async function ownerLogin() {
     btn.disabled    = false;
   }
 }
-document.getElementById('btnOwnerLogin').addEventListener('click', ownerLogin);
-document.getElementById('ownerPassInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') ownerLogin();
-});
+$('btnOwnerLogin').addEventListener('click', ownerLogin);
+$('ownerPassInput').addEventListener('keydown', e => { if (e.key === 'Enter') ownerLogin(); });
 
-/* ════════════════════════════════════════════════════════
-   OWNER FLOW — Step 1: set password (first-time)
-════════════════════════════════════════════════════════ */
+/* ─────────────────────────────────────────────────────
+   OWNER FLOW — Step 1: set password
+───────────────────────────────────────────────────── */
 let _tmpPass = null;
 
 function ownerSetupPass() {
-  const p1 = document.getElementById('setupPass1').value;
-  const p2 = document.getElementById('setupPass2').value;
+  const p1 = $('setupPass1').value;
+  const p2 = $('setupPass2').value;
   setAuthErr('setupPassError', '');
-  if (!p1)         { setAuthErr('setupPassError', 'Vui lòng nhập mật khẩu.'); return; }
-  if (p1.length < 6) { setAuthErr('setupPassError', 'Mật khẩu tối thiểu 6 ký tự.'); return; }
-  if (p1 !== p2)   { setAuthErr('setupPassError', 'Mật khẩu không khớp.'); return; }
+  if (!p1)          return setAuthErr('setupPassError', 'Vui lòng nhập mật khẩu.');
+  if (p1.length < 6) return setAuthErr('setupPassError', 'Mật khẩu tối thiểu 6 ký tự.');
+  if (p1 !== p2)    return setAuthErr('setupPassError', 'Mật khẩu không khớp.');
   _tmpPass = p1;
-  document.getElementById('setupPass1').value = '';
-  document.getElementById('setupPass2').value = '';
+  $('setupPass1').value = '';
+  $('setupPass2').value = '';
   showOwnerStep('ownerStep2');
 }
-document.getElementById('btnSetupPass').addEventListener('click', ownerSetupPass);
-document.getElementById('setupPass1').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('setupPass2').focus();
-});
-document.getElementById('setupPass2').addEventListener('keydown', e => {
-  if (e.key === 'Enter') ownerSetupPass();
-});
+$('btnSetupPass').addEventListener('click', ownerSetupPass);
+$('setupPass1').addEventListener('keydown', e => { if (e.key === 'Enter') $('setupPass2').focus(); });
+$('setupPass2').addEventListener('keydown', e => { if (e.key === 'Enter') ownerSetupPass(); });
 
-/* ════════════════════════════════════════════════════════
-   OWNER FLOW — Step 2: enter API keys
-════════════════════════════════════════════════════════ */
+/* ─────────────────────────────────────────────────────
+   OWNER FLOW — Step 2: API keys
+───────────────────────────────────────────────────── */
 function ownerSetupKeys() {
-  const pat   = document.getElementById('setupPAT').value.trim();
-  const imgbb = document.getElementById('setupImgBB').value.trim();
+  const pat   = $('setupPAT').value.trim();
+  const imgbb = $('setupImgBB').value.trim();
   setAuthErr('setupKeysError', '');
-  if (!pat)   { setAuthErr('setupKeysError', 'Vui lòng nhập GitHub PAT.'); return; }
-  if (!imgbb) { setAuthErr('setupKeysError', 'Vui lòng nhập ImgBB API key.'); return; }
+  if (!pat)   return setAuthErr('setupKeysError', 'Vui lòng nhập GitHub PAT.');
+  if (!imgbb) return setAuthErr('setupKeysError', 'Vui lòng nhập ImgBB API key.');
   session.pat    = pat;
   session.imgbb  = imgbb;
-  session.gistId = document.getElementById('setupDataGist').value.trim() || null;
+  session.gistId = $('setupDataGist').value.trim() || null;
   showOwnerStep('ownerStep3');
 }
-document.getElementById('btnSetupKeys').addEventListener('click', ownerSetupKeys);
-document.getElementById('setupPAT').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('setupImgBB').focus();
-});
-document.getElementById('setupImgBB').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('setupDataGist').focus();
-});
-document.getElementById('setupDataGist').addEventListener('keydown', e => {
-  if (e.key === 'Enter') ownerSetupKeys();
-});
+$('btnSetupKeys').addEventListener('click', ownerSetupKeys);
+$('setupPAT').addEventListener('keydown',   e => { if (e.key === 'Enter') $('setupImgBB').focus(); });
+$('setupImgBB').addEventListener('keydown', e => { if (e.key === 'Enter') $('setupDataGist').focus(); });
+$('setupDataGist').addEventListener('keydown', e => { if (e.key === 'Enter') ownerSetupKeys(); });
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    OWNER FLOW — Step 3: bootstrap Gist + finish
-════════════════════════════════════════════════════════ */
+───────────────────────────────────────────────────── */
 async function ownerSetupFinish() {
-  const bootstrapId = document.getElementById('setupBootstrapGist').value.trim();
-  const btn         = document.getElementById('btnSetupFinish');
+  const bootstrapId = $('setupBootstrapGist').value.trim();
+  const btn         = $('btnSetupFinish');
   setAuthErr('setupFinishError', '');
-  if (!bootstrapId) {
-    setAuthErr('setupFinishError', 'Vui lòng nhập Bootstrap Gist ID.');
-    return;
-  }
+  if (!bootstrapId) return setAuthErr('setupFinishError', 'Vui lòng nhập Bootstrap Gist ID.');
   if (BOOTSTRAP_GIST_ID === 'REPLACE_WITH_BOOTSTRAP_GIST_ID') {
-    setAuthErr('setupFinishError',
+    return setAuthErr('setupFinishError',
       `⚠ Bạn cần hardcode ID này vào BOOTSTRAP_GIST_ID trong index.html trước rồi re-deploy: "${bootstrapId}"`);
-    return;
   }
   btn.textContent = 'Đang mã hóa...';
   btn.disabled    = true;
@@ -1757,52 +1633,40 @@ async function ownerSetupFinish() {
     btn.disabled    = false;
   }
 }
-document.getElementById('btnSetupFinish').addEventListener('click', ownerSetupFinish);
-document.getElementById('setupBootstrapGist').addEventListener('keydown', e => {
-  if (e.key === 'Enter') ownerSetupFinish();
-});
+$('btnSetupFinish').addEventListener('click', ownerSetupFinish);
+$('setupBootstrapGist').addEventListener('keydown', e => { if (e.key === 'Enter') ownerSetupFinish(); });
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    GUEST FLOW
-════════════════════════════════════════════════════════ */
+───────────────────────────────────────────────────── */
 async function guestStart() {
-  const pat    = document.getElementById('guestPAT').value.trim();
-  const imgbb  = document.getElementById('guestImgBB').value.trim();
-  const gistId = document.getElementById('guestGistId').value.trim();
+  const pat    = $('guestPAT').value.trim();
+  const imgbb  = $('guestImgBB').value.trim();
+  const gistId = $('guestGistId').value.trim();
   setAuthErr('guestError', '');
-  if (!pat)   { setAuthErr('guestError', 'Vui lòng nhập GitHub PAT.'); return; }
-  if (!imgbb) { setAuthErr('guestError', 'Vui lòng nhập ImgBB API key.'); return; }
-  // Persist for convenience on next visit
+  if (!pat)   return setAuthErr('guestError', 'Vui lòng nhập GitHub PAT.');
+  if (!imgbb) return setAuthErr('guestError', 'Vui lòng nhập ImgBB API key.');
+
   localStorage.setItem('tf_guest_pat',   pat);
   localStorage.setItem('tf_guest_imgbb', imgbb);
-  if (gistId) localStorage.setItem('tf_guest_gist',  gistId);
-  else        localStorage.removeItem('tf_guest_gist');
-  session.mode   = 'guest';
-  session.pat    = pat;
-  session.imgbb  = imgbb;
-  session.gistId = gistId || null;
+  gistId
+    ? localStorage.setItem('tf_guest_gist', gistId)
+    : localStorage.removeItem('tf_guest_gist');
+
+  Object.assign(session, { mode: 'guest', pat, imgbb, gistId: gistId || null });
   await initApp();
 }
-document.getElementById('btnGuestStart').addEventListener('click', guestStart);
-document.getElementById('guestPAT').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('guestImgBB').focus();
-});
-document.getElementById('guestImgBB').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('guestGistId').focus();
-});
-document.getElementById('guestGistId').addEventListener('keydown', e => {
-  if (e.key === 'Enter') guestStart();
-});
+$('btnGuestStart').addEventListener('click', guestStart);
+$('guestPAT').addEventListener('keydown',    e => { if (e.key === 'Enter') $('guestImgBB').focus(); });
+$('guestImgBB').addEventListener('keydown',  e => { if (e.key === 'Enter') $('guestGistId').focus(); });
+$('guestGistId').addEventListener('keydown', e => { if (e.key === 'Enter') guestStart(); });
 
-/* ════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────
    CONSOLE HELPERS
-════════════════════════════════════════════════════════ */
+───────────────────────────────────────────────────── */
 window._session = () => ({
-  mode:     session.mode,
-  gistId:   session.gistId,
-  hasPAT:   !!session.pat,
-  hasImgBB: !!session.imgbb,
-  isDirty,
+  mode: session.mode, gistId: session.gistId,
+  hasPAT: !!session.pat, hasImgBB: !!session.imgbb, isDirty,
 });
 
 window._testDecrypt = async pass => {
